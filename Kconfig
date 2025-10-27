@@ -1,0 +1,404 @@
+# Kconfig fragment for mkqnximage options (choice conversions + removal of --force)
+# Place this file at the top of your Kconfig tree.
+
+menu "mkqnximage (vm/image) configuration"
+
+# -------------------------
+# Behavior
+# -------------------------
+menu "Behavior"
+
+# NOTE: --force is intentionally removed from the UI and always passed by the
+# build script to avoid mkqnximage refusing to write into non-empty directories.
+
+config MKQNX_CLEAN
+	bool "Clean output directory before building"
+	default n
+	help
+	  Clean output directory prior to building.
+
+config MKQNX_VERBOSE
+	bool "Verbose build output"
+	default n
+	help
+	  If yes, output additional information while building images.
+
+config MKQNX_ASSUMED_IP
+	string "Assumed IP address or 'none'"
+	default ""
+	help
+	  Use the provided IP address rather than trying to resolve it. If set to
+	  'none', normal resolution occurs.
+
+config MKQNX_NOPROMPT
+	bool "Don't prompt; fail if prompt would be required"
+	default n
+	help
+	  Do not ever prompt for anything and instead fail if a prompt is required.
+
+endmenu # Behavior
+
+
+# -------------------------
+# Runtime
+# -------------------------
+menu "Runtime"
+
+choice
+	prompt "Target type"
+	default MKQNX_TYPE_QEMU
+
+config MKQNX_TYPE_QEMU
+	bool "qemu"
+config MKQNX_TYPE_VMWARE
+	bool "vmware"
+config MKQNX_TYPE_VBOX
+	bool "vbox"
+config MKQNX_TYPE_QVM
+	bool "qvm"
+endchoice
+
+config MKQNX_CPU
+	int "Number of CPUs for VM"
+	default 2
+	help
+	  Number of CPUs to assign when running in a VM. Default 2, maximum 4.
+
+config MKQNX_PROC
+	string "Procnto executable name or 'no'"
+	default ""
+	help
+	  Set the name of the procnto executable to use.
+
+config MKQNX_RAM
+	string "Amount of RAM for VM (e.g. 512M, 1G)"
+	default "1G"
+	help
+	  Set RAM for QEMU images. Accepts values like 512M, 1024, 1G. Default is 1G.
+
+endmenu # Runtime
+
+
+# -------------------------
+# Partitioning
+# -------------------------
+menu "Partitioning"
+
+config MKQNX_PART_SIZES
+	string "Partition sizing mode"
+	default "full"
+
+config MKQNX_BOOT_SIZE
+	int "Extra boot size in MB"
+	default 0
+
+config MKQNX_SYS_SIZE
+	int "Extra system size in MB"
+	default 0
+
+config MKQNX_SYS_INODES
+	int "Number of inodes for system partition"
+	default 0
+
+config MKQNX_DATA_SIZE
+	int "Extra data size in MB"
+	default 0
+
+config MKQNX_DATA_INODES
+	int "Number of inodes for data partition"
+	default 0
+
+endmenu # Partitioning
+
+
+# -------------------------
+# File system & integrity
+# -------------------------
+menu "File System & Integrity"
+
+config MKQNX_UNION
+	bool "Use traditional QNX union FS at /"
+	default y
+
+choice
+	prompt "QNX Compressed FS"
+	default MKQNX_QCFS_NO
+
+config MKQNX_QCFS_NO
+	bool "no"
+config MKQNX_QCFS_YES
+	bool "yes (lz4hc)"
+config MKQNX_QCFS_LZ4HC
+	bool "lz4hc"
+config MKQNX_QCFS_ZSTD
+	bool "zstd"
+endchoice
+
+config MKQNX_QTD
+	bool "Wrap system partition in QTD container"
+	default n
+
+config MKQNX_QTSAFEFS
+	bool "Use QNX Trusted FS for safety"
+	default n
+
+choice
+	prompt "Secure /data mount option"
+	default MKQNX_SECURE_DATA_NO
+
+config MKQNX_SECURE_DATA_NO
+	bool "no"
+config MKQNX_SECURE_DATA_NOSUID
+	bool "nosuid"
+config MKQNX_SECURE_DATA_NOEXEC
+	bool "noexec"
+endchoice
+
+config MKQNX_PATHTRUST
+	bool "Enable pathtrust"
+	default n
+
+choice
+	prompt "Zoneinfo option"
+	default MKQNX_ZONEINFO_NO
+
+config MKQNX_ZONEINFO_NO
+	bool "no"
+config MKQNX_ZONEINFO_YES
+	bool "yes"
+config MKQNX_ZONEINFO_PATH
+	string "path"
+endchoice
+
+config MKQNX_TZ
+	string "Timezone (POSIX TZ or zoneinfo name)"
+	default "UTC"
+
+endmenu # File System & Integrity
+
+
+# -------------------------
+# Users & SSH
+# -------------------------
+menu "Users & SSH"
+
+config MKQNX_USERS
+	string "List of users and optional passwords"
+	default ""
+
+config MKQNX_SSH_IDENT
+	string "SSH public key path or 'prompt'/'none'"
+	default "prompt"
+
+config MKQNX_SSHD_PREGEN
+	bool "Pre-generate sshd host keys and include them"
+	default y
+
+endmenu # Users & SSH
+
+
+# -------------------------
+# Networking
+# -------------------------
+menu "Networking"
+
+config MKQNX_IP
+	string "Static IP address or 'dhcp'"
+	default "dhcp"
+
+config MKQNX_HOSTNAME
+	string "System hostname"
+	default ""
+
+config MKQNX_MACADDR
+	string "MAC address (xx:xx:xx:xx:xx:xx)"
+	default ""
+
+config MKQNX_TIME_SERVERS
+	string "NTP servers, colon-separated"
+	default "pool.ntp.org"
+
+endmenu # Networking
+
+
+# -------------------------
+# Repos & extras
+# -------------------------
+menu "Repos & Extras"
+
+config MKQNX_REPOS
+	string "Package repository paths (colon-separated)"
+	default ""
+
+config MKQNX_EXTRA_DIRS
+	string "Extra content directories"
+	default ""
+
+endmenu # Repos & Extras
+
+
+# -------------------------
+# Security & TPM
+# -------------------------
+menu "Security & TPM"
+
+config MKQNX_ASLR
+	bool "Enable ASLR"
+	default y
+
+config MKQNX_SECURE_PROCFS
+	bool "Restrict /proc/<pid> permissions"
+	default n
+
+config MKQNX_CERTICOM
+	bool "Include Certicom crypto libs"
+	default n
+
+choice
+	prompt "TCG/TPM support"
+	default MKQNX_TCG_NO
+
+config MKQNX_TCG_NO
+	bool "no"
+config MKQNX_TCG_YES
+	bool "yes"
+config MKQNX_TCG_CMDLINE
+	bool "cmdline"
+endchoice
+
+config MKQNX_CRYPTODEV
+	bool "Enable /dev/crypto device"
+	default n
+
+config MKQNX_POLICY
+	string "Path to security policy file or 'none'"
+	default "none"
+
+choice
+	prompt "Security policy mode"
+	default MKQNX_SECPOL_NO
+
+config MKQNX_SECPOL_NO
+	bool "no"
+config MKQNX_SECPOL_DEVELOP
+	bool "develop"
+config MKQNX_SECPOL_OPEN
+	bool "open"
+config MKQNX_SECPOL_SECURE
+	bool "secure"
+endchoice
+
+config MKQNX_QFIM
+	bool "Include QFIM (Integrity Measurement)"
+	default n
+
+endmenu # Security & TPM
+
+
+# -------------------------
+# Packages
+# -------------------------
+menu "Packages"
+
+config MKQNX_TOMCRYPT
+	bool "Include Tomcrypt library"
+	default n
+
+config MKQNX_PERL
+	bool "Include Perl"
+	default n
+
+config MKQNX_PKCS11
+	bool "Include PKCS#11 support"
+	default n
+
+config MKQNX_PYTHON
+	bool "Include Python"
+	default n
+
+config MKQNX_QAUDIT
+	bool "Include QAudit framework"
+	default n
+
+config MKQNX_VALGRIND
+	bool "Include Valgrind"
+	default n
+
+endmenu # Packages
+
+
+# -------------------------
+# Diagnostics
+# -------------------------
+menu "Diagnostics"
+
+config MKQNX_IO_SOCK_DIAG
+	bool "Use diagnostic io-sock version"
+	default n
+
+config MKQNX_SANITIZERS
+	bool "Load sanitizer libraries on boot"
+	default n
+
+config MKQNX_QH_CONFIG
+	string "slog2 logging configuration"
+	default "no"
+
+endmenu # Diagnostics
+
+
+# -------------------------
+# Hardware
+# -------------------------
+menu "Hardware"
+
+config MKQNX_USB
+	bool "Enable USB support"
+	default y
+
+config MKQNX_GRAPHICS
+	bool "Include graphics libs and start screen"
+	default n
+
+config MKQNX_NFS
+	string "NFS mount spec (<host>:<export> or 'no')"
+	default "no"
+
+endmenu # Hardware
+
+
+# -------------------------
+# System flags
+# -------------------------
+menu "System Flags"
+
+config MKQNX_ROOT
+	bool "Run services as root/allow root-sustained"
+	default n
+
+config MKQNX_ABLELOCK
+	bool "Allow ability locking"
+	default y
+
+config MKQNX_SLM
+	bool "Start system using slm instead of shell script"
+	default n
+
+endmenu # System Flags
+
+
+# -------------------------
+# Misc / arch
+# -------------------------
+choice
+	prompt "Target architecture"
+	default MKQNX_ARCH_X86_64
+
+config MKQNX_ARCH_X86_64
+	bool "x86_64"
+config MKQNX_ARCH_AARCH64LE
+	bool "aarch64le"
+endchoice
+
+endmenu # mkqnximage
+
