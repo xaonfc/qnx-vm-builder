@@ -1,6 +1,3 @@
-# Kconfig fragment for mkqnximage options (choice conversions + removal of --force)
-# Place this file at the top of your Kconfig tree.
-
 menu "mkqnximage (vm/image) configuration"
 
 # -------------------------

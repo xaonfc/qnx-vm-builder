@@ -1,4 +1,3 @@
-# Minimal Makefile to operate on the Kconfig fragment and run mkqnximage
 KCONFIG := Kconfig
 CONFIG := .config
 SCRIPTS := scripts
@@ -12,8 +11,8 @@ all: build
 menuconfig:
 ifeq ($(MENU),)
 	@echo "No 'menuconfig' frontend found in PATH."
-	@echo "If you have kconfig-frontends installed, ensure 'menuconfig' or 'mconf' is on PATH."
-	@echo "Fallback: run 'make generic' to generate a default .config and then 'make build'."
+	@echo "If you have a kconfig package installed, ensure something like 'menuconfig' or 'mconf' is on PATH."
+	@echo "Alternative: run 'make generic' to generate a default .config and then 'make build'."
 	@exit 1
 else
 	@$(MENU) $(KCONFIG)
