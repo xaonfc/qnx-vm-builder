@@ -12,13 +12,20 @@ config MKQNX_CLEAN
 	bool "Clean output directory before building"
 	default n
 	help
-	  Clean output directory prior to building.
+	  Clean output directory prior to building. This can be useful in cases
+	  where an image might not have been built correctly due to changes in
+	  files that mkqnximage was unaware of, for example following an update
+	  to the package containing mkqnximage. Other than taking slightly
+	  longer, --clean should always be safe to use and is useful if there
+	  is some doubt as to what was built.
 
 config MKQNX_VERBOSE
 	bool "Verbose build output"
 	default n
 	help
-	  If yes, output additional information while building images.
+	  If yes, output additional information while building images. Omitting
+	  the value is equivalent to using --verbose=yes. The option must be
+	  respecified each time mkqnximage is run to have an effect.
 
 config MKQNX_ASSUMED_IP
 	string "Assumed IP address or 'none'"
@@ -31,7 +38,9 @@ config MKQNX_NOPROMPT
 	bool "Don't prompt; fail if prompt would be required"
 	default n
 	help
-	  Do not ever prompt for anything and instead fail if a prompt is required.
+	  Don't ever prompt for anything and instead fail if a prompt is
+	  required. This is not usually wanted unless running in an environment
+	  where it is not possible to request information.
 
 endmenu # Behavior
 
@@ -44,6 +53,11 @@ menu "Runtime"
 choice
 	prompt "Target type"
 	default MKQNX_TYPE_QEMU
+	help
+	  Build an image for a particular target type. QEMU allows for a
+	  greater selection of architectures but doesn't support graphics, and
+	  might not operate on all platforms. VMWare supports graphics.
+	  VirtualBox is free. QVM is for a qvm guest OS.
 
 config MKQNX_TYPE_QEMU
 	bool "qemu"
@@ -59,19 +73,27 @@ config MKQNX_CPU
 	int "Number of CPUs for VM"
 	default 2
 	help
-	  Number of CPUs to assign when running in a VM. Default 2, maximum 4.
+	  Set the number of CPUs. The default is 2 CPUs and the maximum is 4.
+	  An exception is when running arm or aarch64 and the QEMU version is
+	  2.*, it will only use 1 CPU. If your QEMU version is 3+, running
+	  aarch64 with multiple CPUs may require a newer version of QEMU for it
+	  to work.
 
 config MKQNX_PROC
 	string "Procnto executable name or 'no'"
 	default ""
 	help
-	  Set the name of the procnto executable to use.
+	  Set the name of the procnto executable to use. If not set then the
+	  name is either procnto-smp-instr for the standard build or
+	  procnto-smp-instr-safety for the safety build.
 
 config MKQNX_RAM
 	string "Amount of RAM for VM (e.g. 512M, 1G)"
 	default "1G"
 	help
-	  Set RAM for QEMU images. Accepts values like 512M, 1024, 1G. Default is 1G.
+	  Set the amount of RAM dedicated to the image when running through
+	  QEMU where <X> is the amount. M is megabytes and G is gigabytes.
+	  default: 1G
 
 endmenu # Runtime
 
@@ -84,26 +106,49 @@ menu "Partitioning"
 config MKQNX_PART_SIZES
 	string "Partition sizing mode"
 	default "full"
+	help
+	  If set to full, partitions are sized based on contents and
+	  --sys-size and --data-size options. Alternatively, fixed sizes can
+	  be specified for the boot, system and data partitions (in MB). This
+	  permits individual partitions to be updated selectively (see --copy
+	  and --update options). This is primarily useful when the data will
+	  be written to some external media such as SD cards for booting a
+	  real target. When the image will be written to an SD card, the data
+	  size can be omitted in which case the data partition will be made to
+	  fill the available space.
 
 config MKQNX_BOOT_SIZE
 	int "Extra boot size in MB"
 	default 0
+	help
+	  Extra space expressed in Mbytes to allocate for boot partition
+	  beyond initial requirements.
 
 config MKQNX_SYS_SIZE
 	int "Extra system size in MB"
 	default 0
+	help
+	  Extra space expressed in Mbytes to allocate for system partition
+	  beyond initial requirements.
 
 config MKQNX_SYS_INODES
 	int "Number of inodes for system partition"
 	default 0
+	help
+	  Number of inodes in system partition
 
 config MKQNX_DATA_SIZE
 	int "Extra data size in MB"
 	default 0
+	help
+	  Extra space expressed in Mbytes to allocate for data partition
+	  beyond initial requirements.
 
 config MKQNX_DATA_INODES
 	int "Number of inodes for data partition"
 	default 0
+	help
+	  Number of inodes in data partition
 
 endmenu # Partitioning
 
@@ -114,12 +159,21 @@ endmenu # Partitioning
 menu "File System & Integrity"
 
 config MKQNX_UNION
-	bool "Use traditional QNX union FS at /"
-	default y
+    bool "Use traditional QNX union FS at /"                      
+    default y
+	help
+	  If yes, use the traditional QNX organisation that has the ifs
+	  mounted at /. If no, a union free system is created. With no
+	  unions, opens are slightly faster as only a single resource manager
+	  has to be queried for any path.
 
 choice
 	prompt "QNX Compressed FS"
 	default MKQNX_QCFS_NO
+	help
+	  If not 'no', the system partition is read-only and uses the QNX
+	  Compressed Filesystem driver. 'yes': use the lz4hc algorithm.
+	  'lz4hc': use the lz4hc algorithm. 'zstd': use the zstd algorithm.
 
 config MKQNX_QCFS_NO
 	bool "no"
@@ -129,19 +183,33 @@ config MKQNX_QCFS_LZ4HC
 	bool "lz4hc"
 config MKQNX_QCFS_ZSTD
 	bool "zstd"
+
 endchoice
 
 config MKQNX_QTD
 	bool "Wrap system partition in QTD container"
 	default n
+	help
+	  If yes, the system partition is read-only and protected by wrapping
+	  in a QTD container. This is a good idea for a released system but
+	  may be inconvenient in cases where security is not important.
 
 config MKQNX_QTSAFEFS
 	bool "Use QNX Trusted FS for safety"
 	default n
+	help
+	  If yes, the system partition is read-only and uses the QNX trusted
+	  filesystem for safety driver (qtsafefsd).
 
 choice
 	prompt "Secure /data mount option"
 	default MKQNX_SECURE_DATA_NO
+	help
+	  If no, the default, the /data directory allows executables to be
+	  run from it. For a secure system, ideally this should not be
+	  allowed or at a minimum suid binaries should be disallowed which
+	  the options, noexec and nosuid enable (see mount utility for
+	  details).
 
 config MKQNX_SECURE_DATA_NO
 	bool "no"
@@ -154,10 +222,32 @@ endchoice
 config MKQNX_PATHTRUST
 	bool "Enable pathtrust"
 	default n
+	help
+	  If set to yes, the pathtrust feature will be enabled. This causes
+	  the setuid/setgid bits of binaries to be ignored unless they are on
+	  a trusted file system and requires any process that tries to
+	  execute a binary or load a shared object from an untrusted file
+	  system have the untrusted_exec ability. It also allows the function
+	  fchecktrust to distinguish trusted and untrusted files.
+	  
+	  By default, only the ifs will be trusted. If the --qtd option is
+	  set to yes, the system partition will also be trusted.
 
 choice
 	prompt "Zoneinfo option"
 	default MKQNX_ZONEINFO_NO
+	help
+	  This option is used to load the zoneinfo TZ database on the device
+	  from either a default location of usr/share/zoneinfo off of one of
+	  the OPT_REPOS paths (yes) or a full path to the zoneinfo database
+	  (<path>)
+	  
+	  The zoneinfo database can be downloaded from
+	  https://www.iana.org/time-zones
+	  
+	  Generating the database can be done using these instructions on
+	  Linux see 6.9.2.2 from
+	  http://www.linuxfromscratch.org/lfs/view/development/chapter06/glibc.html
 
 config MKQNX_ZONEINFO_NO
 	bool "no"
@@ -170,6 +260,15 @@ endchoice
 config MKQNX_TZ
 	string "Timezone (POSIX TZ or zoneinfo name)"
 	default "UTC"
+	help
+	  The time zone the target is used in. The format is as specified by
+	  the POSIX TZ format (e.g.
+	  stdoffset[dst[offset][,start[/time],end[/time]]]), and accepts the
+	  zoneinfo style as well (e.g. America/Montreal), though in that
+	  case, the --zoneinfo option needs to be configured. To configure,
+	  for example, Eastern Time, you would use
+	  EST5EDT,M3.2.0/2,M11.1.0/2.
+	  
 
 endmenu # File System & Integrity
 
@@ -182,14 +281,53 @@ menu "Users & SSH"
 config MKQNX_USERS
 	string "List of users and optional passwords"
 	default ""
+	help
+	  List of users. This controls the contents of the passwd, group and
+	  shadow files as well home directories. The value is a colon
+	  separated list of user names. Each user name may be followed by a
+	  '/' and the user's password. If the password is omitted and it was
+	  not previously set, one will be created that matches the user name.
+	  To instead have no password, a password of '-' can be specified.
+	  
+	  If the value is preceded by a '+', the list of users represents new
+	  users to add or passwords to change if the user already exists.
+	  
+	  The first non-root user is given a UID of 1000 with each subsequent
+	  one incremented by one. If a user name is given as '-', no user is
+	  created but the next UID is still incremented.
+	  
+	  On setting the option, the new value becomes the list of users with
+	  passwords omitted. The passwords are contained in
+	  local/misc_files/shadow, this file may be deleted to remove
+	  remembered passwords.
 
 config MKQNX_SSH_IDENT
 	string "SSH public key path or 'prompt'/'none'"
 	default "prompt"
+	help
+	  Path to an ssh identity public key file needed to enable root
+	  login. This will usually be ~/.ssh/id_ed25519.pub or
+	  ~/.ssh/id_rsa.pub. If you don't have one you can generate a new
+	  public/private key pair using:
+	        ssh-keygen -q -t ed25519 -N '' -f ~/.ssh/id_ed25519
+	  
+	  If set to prompt, mkqnximage just annoys you each time you run it
+	  telling you to set the option since you really want to. If you
+	  don't want an ssh identify file you can just set the option to
+	  none.
 
 config MKQNX_SSHD_PREGEN
 	bool "Pre-generate sshd host keys and include them"
 	default y
+	help
+	  If yes, private keys for sshd are generated once for sshd and
+	  included with the image. If no, the keys are created on first
+	  boot. Pre-generating the keys allows them to remain the same when
+	  the image is regenerated. This avoids complaints from ssh about
+	  potential man in the middle attacks and the need to remove keys
+	  from your known_hosts file. This is not something that is
+	  recommended for a real system but for a local one running in a
+	  virtual machine it is harmless.
 
 endmenu # Users & SSH
 
@@ -202,18 +340,35 @@ menu "Networking"
 config MKQNX_IP
 	string "Static IP address or 'dhcp'"
 	default "dhcp"
+	help
+	  Static IP address to use or dhcp to obtain an address using DHCP.
+
 
 config MKQNX_HOSTNAME
 	string "System hostname"
 	default ""
+	help
+	  Hostname for system.
 
 config MKQNX_MACADDR
 	string "MAC address (xx:xx:xx:xx:xx:xx)"
 	default ""
+	help
+	  The MAC address for the network interface. You do not usually want
+	  to set this option in which case it is set to a randomly chosen
+	  value.
 
 config MKQNX_TIME_SERVERS
 	string "NTP servers, colon-separated"
 	default "pool.ntp.org"
+	help
+	  Colon-separated list of NTP servers to set time by on boot. This
+	  applies only for targets that do not have access to a real-time
+	  clock.
+	  
+	  The default is pool.ntp.org. This may have to be changed to a
+	  local server if the target is run on a network that blocks NTP
+	  traffic.
 
 endmenu # Networking
 
@@ -226,10 +381,23 @@ menu "Repos & Extras"
 config MKQNX_REPOS
 	string "Package repository paths (colon-separated)"
 	default ""
+	help
+	  A colon separated list of directories to be used by mkifs and
+	  mkqnx6fsimg to search for files. This option may contain
+	  environment variables such as $QNX_TARGET. These are expanded at
+	  build time. Defaults to "$QNX_STAGE_nto:$QNX_TARGET".
 
 config MKQNX_EXTRA_DIRS
 	string "Extra content directories"
 	default ""
+	help
+	  A colon separated list of extra content directories to search for
+	  mkqnximage option and other files. If the directories are preceded
+	  by a '+' or '-', they are added or removed from the existing set
+	  of extra directories. The directories may be absolute paths,
+	  relative to the directory mkqnximage is run in or relative to any
+	  'extras' directory in any current content directory. If 'none',
+	  only the standard mkqnximage directory and local are used.
 
 endmenu # Repos & Extras
 
@@ -242,19 +410,35 @@ menu "Security & TPM"
 config MKQNX_ASLR
 	bool "Enable ASLR"
 	default y
+	help
+	  If yes, use Address Space Layout Randomization. This should be
+	  used on a shipping system as it improves security.
+	  
 
 config MKQNX_SECURE_PROCFS
 	bool "Restrict /proc/<pid> permissions"
 	default n
+	help
+	  If yes, permissions for /proc/<pid> will be restricted to prevent
+	  access by other processes unless they have XPROCESS_QUERY or
+	  XPROCESS_DEBUG abilities.
 
 config MKQNX_CERTICOM
 	bool "Include Certicom crypto libs"
 	default n
+	help
+	  If yes, include Certicom libraries. 
 
 choice
 	prompt "TCG/TPM support"
 	default MKQNX_TCG_NO
-
+	help
+	  If yes, include TCG (Trusted Computing Group) related libraries
+	  and services to support the use of a TPM (Trusted Platform
+	  Module). If cmdline, also include utilities to enable
+	  configuration and control of the TPM from the command line.
+	  
+	  
 config MKQNX_TCG_NO
 	bool "no"
 config MKQNX_TCG_YES
@@ -266,15 +450,31 @@ endchoice
 config MKQNX_CRYPTODEV
 	bool "Enable /dev/crypto device"
 	default n
+	help
+	  If yes, the system will have a /dev/crypto enabled device
+	  
+	  
 
 config MKQNX_POLICY
 	string "Path to security policy file or 'none'"
 	default "none"
+	help
+	  The path to the security policy file to compile and include at
+	  /proc/boot/secpol.bin or none to not include a security policy.
+	  This does not by itself cause the policy to be used, the use of
+	  policies is controlled by the --secpol option. The --secpol option
+	  can also be used to help generate the policy file as there is none
+	  by default.
 
 choice
 	prompt "Security policy mode"
 	default MKQNX_SECPOL_NO
-
+	help
+	  If no, don't use security polices. May also be 'secure' to use a
+	  policy in secure mode, 'develop' to use in normal developer mode
+	  or 'open' to be unrestricted by default.
+	  
+	  
 config MKQNX_SECPOL_NO
 	bool "no"
 config MKQNX_SECPOL_DEVELOP
@@ -288,6 +488,12 @@ endchoice
 config MKQNX_QFIM
 	bool "Include QFIM (Integrity Measurement)"
 	default n
+	help
+	  If yes, include QFIM (QNX Framework for Integrity Measurement)
+	  libraries, daemon and command line utility and launch the daemon
+	  at startup. Option --tcg=yes or --tcg=cmdline is also required.
+	  
+	  
 
 endmenu # Security & TPM
 
@@ -300,26 +506,55 @@ menu "Packages"
 config MKQNX_TOMCRYPT
 	bool "Include Tomcrypt library"
 	default n
+	help
+	  If yes, include Tomcrypt library. 
 
 config MKQNX_PERL
 	bool "Include Perl"
 	default n
+	help
+	  If yes, perl is included.
+	  
+	  
 
 config MKQNX_PKCS11
 	bool "Include PKCS#11 support"
 	default n
+    help 
+       If yes, the system will have PKCS#11 support installed
+
+       
+
 
 config MKQNX_PYTHON
 	bool "Include Python"
 	default n
+    help
+        If yes, python is included.
+
+        
 
 config MKQNX_QAUDIT
 	bool "Include QAudit framework"
 	default n
+    help
+        If yes, the qaudit framework is included in the image.
+
+        
 
 config MKQNX_VALGRIND
 	bool "Include Valgrind"
 	default n
+    help
+        If yes, valgrind will be part of the image and the chosen binaries will have their symbols
+        stored in /data/valgrind. To execute with valgrind, run the command as:
+        "valgrind <binary> ..."
+
+        Edit the local/valgrind.files file to add the binaries for which you
+        need the symbols.
+
+        
+
 
 endmenu # Packages
 
@@ -332,14 +567,24 @@ menu "Diagnostics"
 config MKQNX_IO_SOCK_DIAG
 	bool "Use diagnostic io-sock version"
 	default n
+    help
+        If yes, use the version of io-sock with extra diagnostics (io-sock-diag)
 
 config MKQNX_SANITIZERS
 	bool "Load sanitizer libraries on boot"
 	default n
+    help
+        If set to yes, sanitizer libraries will be loaded on the system (libubsan.so,
+        libasan.so, etc.).
 
 config MKQNX_QH_CONFIG
 	string "slog2 logging configuration"
 	default "no"
+    help
+        mkqnximage will convert the configuration provided in the argument and set
+        logging configuration in both command-line and non command-line mode for slog2.
+
+        
 
 endmenu # Diagnostics
 
@@ -352,14 +597,22 @@ menu "Hardware"
 config MKQNX_USB
 	bool "Enable USB support"
 	default y
+    help
+        If yes, enable USB.
 
 config MKQNX_GRAPHICS
 	bool "Include graphics libs and start screen"
 	default n
-
+    help
+        Include graphics related libraries and binaries.  This will also start screen on boot.
+        
 config MKQNX_NFS
 	string "NFS mount spec (<host>:<export> or 'no')"
 	default "no"
+    help
+        To have a directory exported by a host mounted on a target specify the host
+        name or IP address and the exported directory in the form "<host>:<export>".
+        This will be mounted at /fs/qnx.
 
 endmenu # Hardware
 
@@ -372,14 +625,23 @@ menu "System Flags"
 config MKQNX_ROOT
 	bool "Run services as root/allow root-sustained"
 	default n
+    help
+        If no, have services drop root after start-up if they support it.  This is
+        usually what you want.
 
 config MKQNX_ABLELOCK
 	bool "Allow ability locking"
 	default y
+    help    
+        If yes, allow abilities to be locked without causing failures in procmgr_ability
+        calls that reference them. If no, locked abilities will cause procmgr_ability
+        calls to fail if they refer to a locked ability.
 
 config MKQNX_SLM
 	bool "Start system using slm instead of shell script"
 	default n
+    help    
+        If yes, start system using slm instead of a shell script.        
 
 endmenu # System Flags
 
@@ -390,6 +652,8 @@ endmenu # System Flags
 choice
 	prompt "Target architecture"
 	default MKQNX_ARCH_X86_64
+    help
+        Architecture to build for.  For VMWare and VirtualBox, only x86_64 is supported.
 
 config MKQNX_ARCH_X86_64
 	bool "x86_64"
