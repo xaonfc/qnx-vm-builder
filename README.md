@@ -29,26 +29,25 @@ This project relies on a few external tools. Please ensure they are installed on
     *   VirtualBox
     *   VMware (Workstation or Player)
     *   QVM (no idea what is this)
-*   **(Optional) Kconfig Frontends:** For interactive configuration (`make menuconfig`).
 
 ### Installation Instructions
 
 **Ubuntu/Debian:**
 ```bash
 sudo apt update && sudo apt upgrade
-sudo apt install git build-essential python3 qemu-system kconfig-frontends
+sudo apt install git build-essential python3 qemu-system
 ```
 
 **Arch Linux:**
 ```bash
 sudo pacman -Syu
-sudo pacman -S base-devel git python qemu-desktop kconfig
+sudo pacman -S base-devel git python qemu-desktop
 ```
 
 **Fedora:**
 ```bash
 sudo dnf update && sudo dnf upgrade
-sudo dnf install @development-tools git python3 qemu-kvm kf6-kconfig
+sudo dnf install @development-tools git python3 qemu-kvm
 ```
 
 **Note on VMware:** VMware products are proprietary and must be downloaded from the official [VMware website](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion).
@@ -63,21 +62,21 @@ sudo dnf install @development-tools git python3 qemu-kvm kf6-kconfig
 
 2.  (Optional) Generate a default configuration:
     ```bash
-    make generic
+    make defconfig
     ```
 
 3.  (Optional) Configure the QNX image interactively:
     ```bash
     make menuconfig
     ```
-    (If `menuconfig` is not found, you can manually edit the `.config` file or use `make generic` to get a default.)
+    (This will automatically clone and build the necessary kconfig tools if they are not present.)
 
 ### Building the QNX Image
 
 To build the QNX image based on your `.config` file:
 
 ```bash
-make build
+make
 ```
 
 This will execute the `mkqnximage` tool with the parameters specified in your `.config`.
@@ -98,7 +97,7 @@ To remove build artifacts (contents of `local/` and `output/`):
 make clean
 ```
 
-To remove build artifacts and the `.config` file:
+To remove build artifacts and the `.config` file, and the `kbuild-standalone` directory:
 
 ```bash
 make distclean
@@ -118,7 +117,7 @@ Contributions are welcome! Please refer to the `LICENSE` file for licensing info
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
-    any later version.
+    (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of

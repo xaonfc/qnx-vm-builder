@@ -4,24 +4,43 @@ SCRIPTS := scripts
 PY := $(shell which python3 || which python)
 MENU := $(shell which menuconfig || which mconf || which kconfig-mconf || which menuconfig-qt || which xconfig)
 
-.PHONY: all menuconfig generic build clean distclean show-config edit-users
+.PHONY: help kbuild-standalone
 
-all: build
+help:
+	@echo "Available targets:"
+	@echo "  menuconfig   - Interactively configure the QNX image (builds kbuild-standalone if needed)"
+	@echo "  oldconfig    - Update .config using Kconfig, preserving existing answers and setting new options to default"
+	@echo "  defconfig    - Generate a default .config from Kconfig"
+	@echo "  build        - Build the QNX image using mkqnximage"
+	@echo "  show-config  - Display the current .config file"
+	@echo "  edit-users   - Launch interactive users editor"
+	@echo "  clean        - Remove build output directories (local/ and output/)"
+	@echo "  distclean    - Remove build output, .config, and kbuild-standalone directory"
 
-menuconfig:
-ifeq ($(MENU),)
-	@echo "No 'menuconfig' frontend found in PATH."
-	@echo "If you have a kconfig package installed, ensure something like 'menuconfig' or 'mconf' is on PATH."
-	@echo "Alternative: run 'make generic' to generate a default .config and then 'make build'."
-	@exit 1
-else
-	@$(MENU) $(KCONFIG)
-endif
+KBUILD_STANDALONE_DIR := kbuild-standalone
+
+.PHONY: kbuild-standalone
+
+kbuild-standalone:
+	@if [ ! -d "$(KBUILD_STANDALONE_DIR)" ]; then \
+		git clone https://github.com/WangNan0/kbuild-standalone $(KBUILD_STANDALONE_DIR); \
+	fi
+	@if [ ! -f "$(KBUILD_STANDALONE_DIR)/build/kconfig/mconf" ]; then \
+		mkdir -p $(KBUILD_STANDALONE_DIR)/build; \
+		cd $(KBUILD_STANDALONE_DIR)/build && make -C .. -f Makefile.sample O=`pwd` -j; \
+	fi
+
+.PHONY: help menuconfig oldconfig defconfig build clean distclean show-config edit-users
+menuconfig: kbuild-standalone
+	@$(KBUILD_STANDALONE_DIR)/build/kconfig/mconf $(KCONFIG)
+
+oldconfig: kbuild-standalone
+	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --oldconfig $(KCONFIG)
 
 $(CONFIG): $(KCONFIG)
-	@make generic
+	@make defconfig
 
-generic: $(SCRIPTS)/gen_default_config.py $(KCONFIG)
+defconfig: $(SCRIPTS)/gen_default_config.py $(KCONFIG)
 	@echo "Generating default .config from $(KCONFIG)..."
 	@$(PY) $(SCRIPTS)/gen_default_config.py $(KCONFIG) $(CONFIG)
 	@echo "Wrote $(CONFIG)."
@@ -51,9 +70,10 @@ clean:
 
 # 'distclean' removes local/, output/ AND .config (interactive confirmation required)
 distclean: clean
-	@read -p "DANGEROUS: this will remove .config. Continue? [y/N]: " ans; \
+	@read -p "DANGEROUS: this will remove .config and $(KBUILD_STANDALONE_DIR). Continue? [y/N]: " ans; \
 	if [ "$$ans" = "y" ] || [ "$$ans" = "Y" ]; then \
 	    rm -f $(CONFIG); \
+	    rm -rf $(KBUILD_STANDALONE_DIR); \
 	    echo "distclean complete."; \
 	else \
 	    echo "Aborted."; \
