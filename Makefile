@@ -1,10 +1,12 @@
 KCONFIG := Kconfig
 CONFIG := .config
+OLDCONFIG := .config.old
 SCRIPTS := scripts
 PY := $(shell which python3 || which python)
-MENU := $(shell which menuconfig || which mconf || which kconfig-mconf || which menuconfig-qt || which xconfig)
 
 .PHONY: help kbuild-standalone
+
+all: build
 
 help:
 	@echo "Available targets:"
@@ -23,7 +25,7 @@ KBUILD_STANDALONE_DIR := kbuild-standalone
 
 kbuild-standalone:
 	@if [ ! -d "$(KBUILD_STANDALONE_DIR)" ]; then \
-		git clone https://github.com/WangNan0/kbuild-standalone $(KBUILD_STANDALONE_DIR); \
+		git clone --depth 1 https://github.com/WangNan0/kbuild-standalone $(KBUILD_STANDALONE_DIR); \
 	fi
 	@if [ ! -f "$(KBUILD_STANDALONE_DIR)/build/kconfig/mconf" ]; then \
 		mkdir -p $(KBUILD_STANDALONE_DIR)/build; \
@@ -72,8 +74,8 @@ clean:
 distclean: clean
 	@read -p "DANGEROUS: this will remove .config and $(KBUILD_STANDALONE_DIR). Continue? [y/N]: " ans; \
 	if [ "$$ans" = "y" ] || [ "$$ans" = "Y" ]; then \
-	    rm -f $(CONFIG); \
-	    rm -rf $(KBUILD_STANDALONE_DIR); \
+	    rm -f $(CONFIG) $(OLDCONFIG); \
+	    rm -rf $(KBUILD_STANDALONE_DIR) include; \
 	    echo "distclean complete."; \
 	else \
 	    echo "Aborted."; \
