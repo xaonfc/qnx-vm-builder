@@ -7,13 +7,13 @@ config MKQNX_USB
         If yes, enable USB.
 
 config MKQNX_GRAPHICS
-	bool "Include graphics libs and start screen"
+	bool "Enable graphics"
 	default n
     help
         Include graphics related libraries and binaries.  This will also start screen on boot.
         
 config MKQNX_NFS
-	string "NFS mount spec (<host>:<export> or 'no')"
+	string "NFS mount spec"
 	default "no"
     help
         To have a directory exported by a host mounted on a target specify the host

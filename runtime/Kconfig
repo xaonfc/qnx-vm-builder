@@ -20,7 +20,7 @@ config MKQNX_TYPE_QVM
 endchoice
 
 config MKQNX_CPU
-	int "Number of CPUs for VM"
+	int "Number of CPUs"
 	default 2
 	help
 	  Set the number of CPUs. The default is 2 CPUs and the maximum is 4.
@@ -30,7 +30,7 @@ config MKQNX_CPU
 	  to work.
 
 config MKQNX_PROC
-	string "Procnto executable name or 'no'"
+	string "Procnto executable name"
 	default ""
 	help
 	  Set the name of the procnto executable to use. If not set then the
@@ -38,7 +38,7 @@ config MKQNX_PROC
 	  procnto-smp-instr-safety for the safety build.
 
 config MKQNX_RAM
-	string "Amount of RAM for VM (e.g. 512M, 1G)"
+	string "Amount of RAM to allocate (e.g. 512M, 1G)"
 	default "1G"
 	help
 	  Set the amount of RAM dedicated to the image when running through

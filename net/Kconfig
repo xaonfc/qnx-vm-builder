@@ -1,7 +1,7 @@
 menu "Networking"
 
 config MKQNX_IP
-	string "Static IP address or 'dhcp'"
+	string "IP address"
 	default "dhcp"
 	help
 	  Static IP address to use or dhcp to obtain an address using DHCP.
@@ -14,7 +14,7 @@ config MKQNX_HOSTNAME
 	  Hostname for system.
 
 config MKQNX_MACADDR
-	string "MAC address (xx:xx:xx:xx:xx:xx)"
+	string "MAC address"
 	default ""
 	help
 	  The MAC address for the network interface. You do not usually want

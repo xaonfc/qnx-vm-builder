@@ -28,18 +28,19 @@ config MKQNX_SYS_SIZE
 	  Extra space expressed in Mbytes to allocate for system partition
 	  beyond initial requirements.
 
-config MKQNX_SYS_INODES
-	int "Number of inodes for system partition"
-	default 0
-	help
-	  Number of inodes in system partition
-
 config MKQNX_DATA_SIZE
 	int "Extra data size in MB"
 	default 0
 	help
 	  Extra space expressed in Mbytes to allocate for data partition
 	  beyond initial requirements.
+
+config MKQNX_SYS_INODES
+	int "Number of inodes for system partition"
+	default 0
+	help
+	  Number of inodes in system partition
+
 
 config MKQNX_DATA_INODES
 	int "Number of inodes for data partition"
