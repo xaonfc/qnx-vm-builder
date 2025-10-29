@@ -42,9 +42,8 @@ oldconfig: kbuild-standalone
 $(CONFIG): $(KCONFIG)
 	@make defconfig
 
-defconfig: $(SCRIPTS)/gen_default_config.py $(KCONFIG)
-	@echo "Generating default .config from $(KCONFIG)..."
-	@$(PY) $(SCRIPTS)/gen_default_config.py $(KCONFIG) $(CONFIG)
+defconfig: configs/defconfig
+	@cp configs/defconfig $(CONFIG)
 	@echo "Wrote $(CONFIG)."
 
 build: $(SCRIPTS)/build_mkqnximage.py $(CONFIG)
