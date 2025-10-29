@@ -1,0 +1,48 @@
+menu "Runtime"
+
+choice
+	prompt "Target type"
+	default MKQNX_TYPE_QEMU
+	help
+	  Build an image for a particular target type. QEMU allows for a
+	  greater selection of architectures but doesn't support graphics, and
+	  might not operate on all platforms. VMWare supports graphics.
+	  VirtualBox is free. QVM is for a qvm guest OS.
+
+config MKQNX_TYPE_QEMU
+	bool "qemu"
+config MKQNX_TYPE_VMWARE
+	bool "vmware"
+config MKQNX_TYPE_VBOX
+	bool "vbox"
+config MKQNX_TYPE_QVM
+	bool "qvm"
+endchoice
+
+config MKQNX_CPU
+	int "Number of CPUs for VM"
+	default 2
+	help
+	  Set the number of CPUs. The default is 2 CPUs and the maximum is 4.
+	  An exception is when running arm or aarch64 and the QEMU version is
+	  2.*, it will only use 1 CPU. If your QEMU version is 3+, running
+	  aarch64 with multiple CPUs may require a newer version of QEMU for it
+	  to work.
+
+config MKQNX_PROC
+	string "Procnto executable name or 'no'"
+	default ""
+	help
+	  Set the name of the procnto executable to use. If not set then the
+	  name is either procnto-smp-instr for the standard build or
+	  procnto-smp-instr-safety for the safety build.
+
+config MKQNX_RAM
+	string "Amount of RAM for VM (e.g. 512M, 1G)"
+	default "1G"
+	help
+	  Set the amount of RAM dedicated to the image when running through
+	  QEMU where <X> is the amount. M is megabytes and G is gigabytes.
+	  default: 1G
+
+endmenu # Runtime

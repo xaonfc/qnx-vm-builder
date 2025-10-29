@@ -1,0 +1,23 @@
+menu "Hardware"
+
+config MKQNX_USB
+	bool "Enable USB support"
+	default y
+    help
+        If yes, enable USB.
+
+config MKQNX_GRAPHICS
+	bool "Include graphics libs and start screen"
+	default n
+    help
+        Include graphics related libraries and binaries.  This will also start screen on boot.
+        
+config MKQNX_NFS
+	string "NFS mount spec (<host>:<export> or 'no')"
+	default "no"
+    help
+        To have a directory exported by a host mounted on a target specify the host
+        name or IP address and the exported directory in the form "<host>:<export>".
+        This will be mounted at /fs/qnx.
+
+endmenu # Hardware

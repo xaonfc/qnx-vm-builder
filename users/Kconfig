@@ -1,0 +1,54 @@
+menu "Users & SSH"
+
+config MKQNX_USERS
+	string "List of users and optional passwords"
+	default ""
+	help
+	  List of users. This controls the contents of the passwd, group and
+	  shadow files as well home directories. The value is a colon
+	  separated list of user names. Each user name may be followed by a
+	  '/' and the user's password. If the password is omitted and it was
+	  not previously set, one will be created that matches the user name.
+	  To instead have no password, a password of '-' can be specified.
+	  
+	  If the value is preceded by a '+', the list of users represents new
+	  users to add or passwords to change if the user already exists.
+	  
+	  The first non-root user is given a UID of 1000 with each subsequent
+	  one incremented by one. If a user name is given as '-', no user is
+	  created but the next UID is still incremented.
+	  
+	  On setting the option, the new value becomes the list of users with
+	  passwords omitted. The passwords are contained in
+	  local/misc_files/shadow, this file may be deleted to remove
+	  remembered passwords.
+
+config MKQNX_SSH_IDENT
+	string "SSH public key path or 'prompt'/'none'"
+	default "prompt"
+	help
+	  Path to an ssh identity public key file needed to enable root
+	  login. This will usually be ~/.ssh/id_ed25519.pub or
+	  ~/.ssh/id_rsa.pub. If you don't have one you can generate a new
+	  public/private key pair using:
+	        ssh-keygen -q -t ed25519 -N '' -f ~/.ssh/id_ed25519
+	  
+	  If set to prompt, mkqnximage just annoys you each time you run it
+	  telling you to set the option since you really want to. If you
+	  don't want an ssh identify file you can just set the option to
+	  none.
+
+config MKQNX_SSHD_PREGEN
+	bool "Pre-generate sshd host keys and include them"
+	default y
+	help
+	  If yes, private keys for sshd are generated once for sshd and
+	  included with the image. If no, the keys are created on first
+	  boot. Pre-generating the keys allows them to remain the same when
+	  the image is regenerated. This avoids complaints from ssh about
+	  potential man in the middle attacks and the need to remove keys
+	  from your known_hosts file. This is not something that is
+	  recommended for a real system but for a local one running in a
+	  virtual machine it is harmless.
+
+endmenu # Users & SSH

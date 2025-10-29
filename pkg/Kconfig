@@ -1,0 +1,56 @@
+menu "Packages"
+
+config MKQNX_TOMCRYPT
+	bool "Include Tomcrypt library"
+	default n
+	help
+	  If yes, include Tomcrypt library. 
+
+config MKQNX_PERL
+	bool "Include Perl"
+	default n
+	help
+	  If yes, perl is included.
+	  
+	  
+
+config MKQNX_PKCS11
+	bool "Include PKCS#11 support"
+	default n
+    help 
+       If yes, the system will have PKCS#11 support installed
+
+       
+
+
+config MKQNX_PYTHON
+	bool "Include Python"
+	default n
+    help
+        If yes, python is included.
+
+        
+
+config MKQNX_QAUDIT
+	bool "Include QAudit framework"
+	default n
+    help
+        If yes, the qaudit framework is included in the image.
+
+        
+
+config MKQNX_VALGRIND
+	bool "Include Valgrind"
+	default n
+    help
+        If yes, valgrind will be part of the image and the chosen binaries will have their symbols
+        stored in /data/valgrind. To execute with valgrind, run the command as:
+        "valgrind <binary> ..."
+
+        Edit the local/valgrind.files file to add the binaries for which you
+        need the symbols.
+
+        
+
+
+endmenu # Packages

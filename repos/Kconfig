@@ -1,0 +1,24 @@
+menu "Repos & Extras"
+
+config MKQNX_REPOS
+	string "Package repository paths (colon-separated)"
+	default ""
+	help
+	  A colon separated list of directories to be used by mkifs and
+	  mkqnx6fsimg to search for files. This option may contain
+	  environment variables such as $QNX_TARGET. These are expanded at
+	  build time. Defaults to "$QNX_STAGE_nto:$QNX_TARGET".
+
+config MKQNX_EXTRA_DIRS
+	string "Extra content directories"
+	default ""
+	help
+	  A colon separated list of extra content directories to search for
+	  mkqnximage option and other files. If the directories are preceded
+	  by a '+' or '-', they are added or removed from the existing set
+	  of extra directories. The directories may be absolute paths,
+	  relative to the directory mkqnximage is run in or relative to any
+	  'extras' directory in any current content directory. If 'none',
+	  only the standard mkqnximage directory and local are used.
+
+endmenu # Repos & Extras

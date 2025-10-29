@@ -1,0 +1,115 @@
+menu "File System & Integrity"
+
+config MKQNX_UNION
+    bool "Use traditional QNX union FS at /"                      
+    default y
+	help
+	  If yes, use the traditional QNX organisation that has the ifs
+	  mounted at /. If no, a union free system is created. With no
+	  unions, opens are slightly faster as only a single resource manager
+	  has to be queried for any path.
+
+choice
+	prompt "QNX Compressed FS"
+	default MKQNX_QCFS_NO
+	help
+	  If not 'no', the system partition is read-only and uses the QNX
+	  Compressed Filesystem driver. 'yes': use the lz4hc algorithm.
+	  'lz4hc': use the lz4hc algorithm. 'zstd': use the zstd algorithm.
+
+config MKQNX_QCFS_NO
+	bool "no"
+config MKQNX_QCFS_YES
+	bool "yes (lz4hc)"
+config MKQNX_QCFS_LZ4HC
+	bool "lz4hc"
+config MKQNX_QCFS_ZSTD
+	bool "zstd"
+
+endchoice
+
+config MKQNX_QTD
+	bool "Wrap system partition in QTD container"
+	default n
+	help
+	  If yes, the system partition is read-only and protected by wrapping
+	  in a QTD container. This is a good idea for a released system but
+	  may be inconvenient in cases where security is not important.
+
+config MKQNX_QTSAFEFS
+	bool "Use QNX Trusted FS for safety"
+	default n
+	help
+	  If yes, the system partition is read-only and uses the QNX trusted
+	  filesystem for safety driver (qtsafefsd).
+
+choice
+	prompt "Secure /data mount option"
+	default MKQNX_SECURE_DATA_NO
+	help
+	  If no, the default, the /data directory allows executables to be
+	  run from it. For a secure system, ideally this should not be
+	  allowed or at a minimum suid binaries should be disallowed which
+	  the options, noexec and nosuid enable (see mount utility for
+	  details).
+
+config MKQNX_SECURE_DATA_NO
+	bool "no"
+config MKQNX_SECURE_DATA_NOSUID
+	bool "nosuid"
+config MKQNX_SECURE_DATA_NOEXEC
+	bool "noexec"
+endchoice
+
+config MKQNX_PATHTRUST
+	bool "Enable pathtrust"
+	default n
+	help
+	  If set to yes, the pathtrust feature will be enabled. This causes
+	  the setuid/setgid bits of binaries to be ignored unless they are on
+	  a trusted file system and requires any process that tries to
+	  execute a binary or load a shared object from an untrusted file
+	  system have the untrusted_exec ability. It also allows the function
+	  fchecktrust to distinguish trusted and untrusted files.
+	  
+	  By default, only the ifs will be trusted. If the --qtd option is
+	  set to yes, the system partition will also be trusted.
+
+choice
+	prompt "Zoneinfo option"
+	default MKQNX_ZONEINFO_NO
+	help
+	  This option is used to load the zoneinfo TZ database on the device
+	  from either a default location of usr/share/zoneinfo off of one of
+	  the OPT_REPOS paths (yes) or a full path to the zoneinfo database
+	  (<path>)
+	  
+	  The zoneinfo database can be downloaded from
+	  https://www.iana.org/time-zones
+	  
+	  Generating the database can be done using these instructions on
+	  Linux see 6.9.2.2 from
+	  http://www.linuxfromscratch.org/lfs/view/development/chapter06/glibc.html
+
+config MKQNX_ZONEINFO_NO
+	bool "no"
+config MKQNX_ZONEINFO_YES
+	bool "yes"
+config MKQNX_ZONEINFO_PATH
+	string "path"
+endchoice
+
+config MKQNX_TZ
+	string "Timezone (POSIX TZ or zoneinfo name)"
+	default "UTC"
+	help
+	  The time zone the target is used in. The format is as specified by
+	  the POSIX TZ format (e.g.
+	  stdoffset[dst[offset][,start[/time],end[/time]]]), and accepts the
+	  zoneinfo style as well (e.g. America/Montreal), though in that
+	  case, the --zoneinfo option needs to be configured. To configure,
+	  for example, Eastern Time, you would use
+	  EST5EDT,M3.2.0/2,M11.1.0/2.
+	  
+
+endmenu # File System & Integrity

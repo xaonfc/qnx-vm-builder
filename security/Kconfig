@@ -1,0 +1,91 @@
+menu "Security & TPM"
+
+config MKQNX_ASLR
+	bool "Enable ASLR"
+	default y
+	help
+	  If yes, use Address Space Layout Randomization. This should be
+	  used on a shipping system as it improves security.
+	  
+
+config MKQNX_SECURE_PROCFS
+	bool "Restrict /proc/<pid> permissions"
+	default n
+	help
+	  If yes, permissions for /proc/<pid> will be restricted to prevent
+	  access by other processes unless they have XPROCESS_QUERY or
+	  XPROCESS_DEBUG abilities.
+
+config MKQNX_CERTICOM
+	bool "Include Certicom crypto libs"
+	default n
+	help
+	  If yes, include Certicom libraries. 
+
+choice
+	prompt "TCG/TPM support"
+	default MKQNX_TCG_NO
+	help
+	  If yes, include TCG (Trusted Computing Group) related libraries
+	  and services to support the use of a TPM (Trusted Platform
+	  Module). If cmdline, also include utilities to enable
+	  configuration and control of the TPM from the command line.
+	  
+	  
+config MKQNX_TCG_NO
+	bool "no"
+config MKQNX_TCG_YES
+	bool "yes"
+config MKQNX_TCG_CMDLINE
+	bool "cmdline"
+endchoice
+
+config MKQNX_CRYPTODEV
+	bool "Enable /dev/crypto device"
+	default n
+	help
+	  If yes, the system will have a /dev/crypto enabled device
+	  
+	  
+
+config MKQNX_POLICY
+	string "Path to security policy file or 'none'"
+	default "none"
+	help
+	  The path to the security policy file to compile and include at
+	  /proc/boot/secpol.bin or none to not include a security policy.
+	  This does not by itself cause the policy to be used, the use of
+	  policies is controlled by the --secpol option. The --secpol option
+	  can also be used to help generate the policy file as there is none
+	  by default.
+
+choice
+	prompt "Security policy mode"
+	default MKQNX_SECPOL_NO
+	help
+	  If no, don't use security polices. May also be 'secure' to use a
+	  policy in secure mode, 'develop' to use in normal developer mode
+	  or 'open' to be unrestricted by default.
+	  
+	  
+config MKQNX_SECPOL_NO
+	bool "no"
+config MKQNX_SECPOL_DEVELOP
+	bool "develop"
+config MKQNX_SECPOL_OPEN
+	bool "open"
+config MKQNX_SECPOL_SECURE
+	bool "secure"
+endchoice
+
+config MKQNX_QFIM
+	bool "Include QFIM (Integrity Measurement)"
+	default n
+	help
+	  If yes, include QFIM (QNX Framework for Integrity Measurement)
+	  libraries, daemon and command line utility and launch the daemon
+	  at startup. Option --tcg=yes or --tcg=cmdline is also required.
+	  
+	  
+
+endmenu # Security & TPM

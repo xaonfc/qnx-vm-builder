@@ -1,0 +1,25 @@
+menu "Diagnostics"
+
+config MKQNX_IO_SOCK_DIAG
+	bool "Use diagnostic io-sock version"
+	default n
+    help
+        If yes, use the version of io-sock with extra diagnostics (io-sock-diag)
+
+config MKQNX_SANITIZERS
+	bool "Load sanitizer libraries on boot"
+	default n
+    help
+        If set to yes, sanitizer libraries will be loaded on the system (libubsan.so,
+        libasan.so, etc.).
+
+config MKQNX_QH_CONFIG
+	string "slog2 logging configuration"
+	default "no"
+    help
+        mkqnximage will convert the configuration provided in the argument and set
+        logging configuration in both command-line and non command-line mode for slog2.
+
+        
+
+endmenu # Diagnostics

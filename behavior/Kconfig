@@ -1,0 +1,40 @@
+menu "Behavior"
+
+# NOTE: --force is intentionally removed from the UI and always passed by the
+# build script to avoid mkqnximage refusing to write into non-empty directories.
+
+config MKQNX_CLEAN
+	bool "Clean output directory before building"
+	default n
+	help
+	  Clean output directory prior to building. This can be useful in cases
+	  where an image might not have been built correctly due to changes in
+	  files that mkqnximage was unaware of, for example following an update
+	  to the package containing mkqnximage. Other than taking slightly
+	  longer, --clean should always be safe to use and is useful if there
+	  is some doubt as to what was built.
+
+config MKQNX_VERBOSE
+	bool "Verbose build output"
+	default n
+	help
+	  If yes, output additional information while building images. Omitting
+	  the value is equivalent to using --verbose=yes. The option must be
+	  respecified each time mkqnximage is run to have an effect.
+
+config MKQNX_ASSUMED_IP
+	string "Assumed IP address or 'none'"
+	default ""
+	help
+	  Use the provided IP address rather than trying to resolve it. If set to
+	  'none', normal resolution occurs.
+
+config MKQNX_NOPROMPT
+	bool "Don't prompt; fail if prompt would be required"
+	default n
+	help
+	  Don't ever prompt for anything and instead fail if a prompt is
+	  required. This is not usually wanted unless running in an environment
+	  where it is not possible to request information.
+
+endmenu # Behavior

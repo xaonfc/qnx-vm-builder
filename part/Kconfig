@@ -1,0 +1,50 @@
+menu "Partitioning"
+
+config MKQNX_PART_SIZES
+	string "Partition sizing mode"
+	default "full"
+	help
+	  If set to full, partitions are sized based on contents and
+	  --sys-size and --data-size options. Alternatively, fixed sizes can
+	  be specified for the boot, system and data partitions (in MB). This
+	  permits individual partitions to be updated selectively (see --copy
+	  and --update options). This is primarily useful when the data will
+	  be written to some external media such as SD cards for booting a
+	  real target. When the image will be written to an SD card, the data
+	  size can be omitted in which case the data partition will be made to
+	  fill the available space.
+
+config MKQNX_BOOT_SIZE
+	int "Extra boot size in MB"
+	default 0
+	help
+	  Extra space expressed in Mbytes to allocate for boot partition
+	  beyond initial requirements.
+
+config MKQNX_SYS_SIZE
+	int "Extra system size in MB"
+	default 0
+	help
+	  Extra space expressed in Mbytes to allocate for system partition
+	  beyond initial requirements.
+
+config MKQNX_SYS_INODES
+	int "Number of inodes for system partition"
+	default 0
+	help
+	  Number of inodes in system partition
+
+config MKQNX_DATA_SIZE
+	int "Extra data size in MB"
+	default 0
+	help
+	  Extra space expressed in Mbytes to allocate for data partition
+	  beyond initial requirements.
+
+config MKQNX_DATA_INODES
+	int "Number of inodes for data partition"
+	default 0
+	help
+	  Number of inodes in data partition
+
+endmenu # Partitioning

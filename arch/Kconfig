@@ -1,0 +1,11 @@
+choice
+	prompt "Target architecture"
+	default MKQNX_ARCH_X86_64
+    help
+        Architecture to build for.  For VMWare and VirtualBox, only x86_64 is supported.
+
+config MKQNX_ARCH_X86_64
+	bool "x86_64"
+config MKQNX_ARCH_AARCH64LE
+	bool "aarch64le"
+endchoice

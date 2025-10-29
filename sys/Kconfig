@@ -1,0 +1,24 @@
+menu "System Flags"
+
+config MKQNX_ROOT
+	bool "Run services as root/allow root-sustained"
+	default n
+    help
+        If no, have services drop root after start-up if they support it.  This is
+        usually what you want.
+
+config MKQNX_ABLELOCK
+	bool "Allow ability locking"
+	default y
+    help    
+        If yes, allow abilities to be locked without causing failures in procmgr_ability
+        calls that reference them. If no, locked abilities will cause procmgr_ability
+        calls to fail if they refer to a locked ability.
+
+config MKQNX_SLM
+	bool "Start system using slm instead of shell script"
+	default n
+    help    
+        If yes, start system using slm instead of a shell script.        
+
+endmenu # System Flags
