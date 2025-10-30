@@ -10,9 +10,12 @@ all: build
 
 help:
 	@echo "Available targets:"
+	@echo "  config       - Update .config using a line-oriented program"
 	@echo "  menuconfig   - Interactively configure the QNX image (builds kbuild-standalone if needed)"
 	@echo "  oldconfig    - Update .config using Kconfig, preserving existing answers and setting new options to default"
 	@echo "  defconfig    - Generate a default .config from Kconfig"
+	@echo "  allyesconfig - Generate a .config with all options set to yes"
+	@echo "  allnoconfig  - Generate a .config with all options set to no"
 	@echo "  build        - Build the QNX image using mkqnximage"
 	@echo "  show-config  - Display the current .config file"
 	@echo "  edit-users   - Launch interactive users editor"
@@ -32,12 +35,21 @@ kbuild-standalone:
 		cd $(KBUILD_STANDALONE_DIR)/build && make -C .. -f Makefile.sample O=`pwd` -j; \
 	fi
 
-.PHONY: help menuconfig oldconfig defconfig build clean distclean show-config edit-users
+.PHONY: help menuconfig oldconfig defconfig allyesconfig allnoconfig build clean distclean show-config edit-users config
 menuconfig: kbuild-standalone
 	@$(KBUILD_STANDALONE_DIR)/build/kconfig/mconf $(KCONFIG)
 
+config: kbuild-standalone
+	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf $(KCONFIG)
+
 oldconfig: kbuild-standalone
 	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --oldconfig $(KCONFIG)
+
+allyesconfig: kbuild-standalone
+	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --allyesconfig $(KCONFIG)
+
+allnoconfig: kbuild-standalone
+	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --allnoconfig $(KCONFIG)
 
 $(CONFIG): $(KCONFIG)
 	@make defconfig
