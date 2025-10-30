@@ -127,3 +127,9 @@ Contributions are welcome! Please refer to the `LICENSE` file for licensing info
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
+
+## Credits
+
+- [WangNan0](https://github.com/WangNan0) for its standalone kconfig system
+- [gemini-cli](https://github.com/google-gemini/gemini-cli) for helping making this project possible
+- [QNX](https://blackberry.qnx.com/en) for making an awesome operating system
