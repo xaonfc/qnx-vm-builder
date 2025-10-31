@@ -76,28 +76,24 @@ config MKQNX_PATHTRUST
 	  set to yes, the system partition will also be trusted.
 
 choice
-	prompt "Zoneinfo option"
-	default MKQNX_ZONEINFO_NO
+	prompt "Zoneinfo Source"
+	default MKQNX_ZONEINFO_SRC_NONE
 	help
-	  This option is used to load the zoneinfo TZ database on the device
-	  from either a default location of usr/share/zoneinfo off of one of
-	  the OPT_REPOS paths (yes) or a full path to the zoneinfo database
-	  (<path>)
-	  
-	  The zoneinfo database can be downloaded from
-	  https://www.iana.org/time-zones
-	  
-	  Generating the database can be done using these instructions on
-	  Linux see 6.9.2.2 from
-	  http://www.linuxfromscratch.org/lfs/view/development/chapter06/glibc.html
+	  Select the source for the zoneinfo (timezone) database.
 
-config MKQNX_ZONEINFO_NO
-	bool "no"
-config MKQNX_ZONEINFO_YES
-	bool "yes"
-config MKQNX_ZONEINFO_PATH
-	string "path"
+	config MKQNX_ZONEINFO_SRC_NONE
+		bool "None"
+
+	config MKQNX_ZONEINFO_SRC_DEFAULT
+		bool "Default (recommended)"
+
+	config MKQNX_ZONEINFO_SRC_CUSTOM
+		bool "Custom Path"
 endchoice
+
+config MKQNX_ZONEINFO_PATH
+	string "Custom Zoneinfo Path"
+	depends on MKQNX_ZONEINFO_SRC_CUSTOM
 
 config MKQNX_TZ
 	string "Timezone"

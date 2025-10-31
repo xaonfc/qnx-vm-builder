@@ -22,34 +22,30 @@ help:
 	@echo "  clean        - Remove build output directories (local/ and output/)"
 	@echo "  distclean    - Remove build output, .config, and kbuild-standalone directory"
 
-KBUILD_STANDALONE_DIR := kbuild-standalone
+KCONFIG_DIR := scripts/kconfig-standalone
 
-.PHONY: kbuild-standalone
+.PHONY: build-kconfig
 
-kbuild-standalone:
-	@if [ ! -d "$(KBUILD_STANDALONE_DIR)" ]; then \
-		git clone --depth 1 https://github.com/WangNan0/kbuild-standalone $(KBUILD_STANDALONE_DIR); \
-	fi
-	@if [ ! -f "$(KBUILD_STANDALONE_DIR)/build/kconfig/mconf" ]; then \
-		mkdir -p $(KBUILD_STANDALONE_DIR)/build; \
-		cd $(KBUILD_STANDALONE_DIR)/build && make -C .. -f Makefile.sample O=`pwd` -j; \
+build-kconfig:
+	@if [ ! -f "$(KCONFIG_DIR)/bin/mconf" ]; then \
+		make -C $(KCONFIG_DIR); \
 	fi
 
 .PHONY: help menuconfig oldconfig defconfig allyesconfig allnoconfig build clean distclean show-config edit-users config
-menuconfig: kbuild-standalone
-	@$(KBUILD_STANDALONE_DIR)/build/kconfig/mconf $(KCONFIG)
+menuconfig: build-kconfig
+	@$(KCONFIG_DIR)/bin/mconf $(KCONFIG)
 
-config: kbuild-standalone
-	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf $(KCONFIG)
+config: build-kconfig
+	@$(KCONFIG_DIR)/bin/conf $(KCONFIG)
 
-oldconfig: kbuild-standalone
-	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --oldconfig $(KCONFIG)
+oldconfig: build-kconfig
+	@$(KCONFIG_DIR)/bin/conf --oldconfig $(KCONFIG)
 
-allyesconfig: kbuild-standalone
-	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --allyesconfig $(KCONFIG)
+allyesconfig: build-kconfig
+	@$(KCONFIG_DIR)/bin/conf --allyesconfig $(KCONFIG)
 
-allnoconfig: kbuild-standalone
-	@$(KBUILD_STANDALONE_DIR)/build/kconfig/conf --allnoconfig $(KCONFIG)
+allnoconfig: build-kconfig
+	@$(KCONFIG_DIR)/bin/conf --allnoconfig $(KCONFIG)
 
 $(CONFIG): $(KCONFIG)
 	@make defconfig
@@ -75,7 +71,7 @@ edit-users: $(SCRIPTS)/edit_users.py $(CONFIG)
 clean:
 	@read -p "This will remove contents of local/ and output/ (if present). Continue? [y/N]: " ans; \
 	if [ "$$ans" = "y" ] || [ "$$ans" = "Y" ]; then \
-	    rm -rf local/* output/*; \
+	    rm -rf local output; \
 	    echo "clean complete."; \
 	else \
 	    echo "Aborted."; \
@@ -83,10 +79,11 @@ clean:
 
 # 'distclean' removes local/, output/ AND .config (interactive confirmation required)
 distclean: clean
-	@read -p "DANGEROUS: this will remove .config and $(KBUILD_STANDALONE_DIR). Continue? [y/N]: " ans; \
+	@read -p "DANGEROUS: this will remove .config. Continue? [y/N]: " ans; \
 	if [ "$$ans" = "y" ] || [ "$$ans" = "Y" ]; then \
 	    rm -f $(CONFIG) $(OLDCONFIG); \
-	    rm -rf $(KBUILD_STANDALONE_DIR) include; \
+	    make -C $(KCONFIG_DIR) clean; \
+	    rm -rf kbuild-standalone; \
 	    echo "distclean complete."; \
 	else \
 	    echo "Aborted."; \

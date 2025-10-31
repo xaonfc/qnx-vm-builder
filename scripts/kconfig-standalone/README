@@ -1,0 +1,27 @@
+Kconfig Tools Standalone Build
+==============================
+
+This repository contains a standalone build system for the Linux Kconfig tools (conf, nconf, mconf, qconf, gconf).
+
+Prerequisites:
+--------------
+To build these tools, you need the following installed on your system:
+- flex
+- bison
+- gcc (C compiler)
+- g++ (C++ compiler)
+- pkg-config
+- ncurses development libraries (e.g., libncurses-dev or ncurses-devel)
+- Qt5 or Qt6 development libraries (e.g., qtbase5-dev or qt6-base-dev)
+- GTK+ 3 development libraries (e.g., libgtk-3-dev)
+
+Build Instructions:
+-------------------
+1. Navigate to the root directory of this repository.
+2. Run 'make' to build all the tools:
+   make
+
+Clean Instructions:
+-------------------
+To remove all built binaries and object files:
+   make clean

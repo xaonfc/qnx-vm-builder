@@ -119,12 +119,14 @@ def main():
         cmd.append("--pathtrust=yes")
 
     zoneinfo = ""
-    if bool_of(cfg, "MKQNX_ZONEINFO_YES"):
+    if bool_of(cfg, "MKQNX_ZONEINFO_SRC_DEFAULT"):
         zoneinfo = "yes"
-    elif "MKQNX_ZONEINFO_PATH" in cfg:
+    elif bool_of(cfg, "MKQNX_ZONEINFO_SRC_CUSTOM"):
         zoneinfo = str_of(cfg, "MKQNX_ZONEINFO_PATH", "")
-    if zoneinfo and zoneinfo != "no":
+    if zoneinfo:
         cmd.append(f"--zoneinfo={zoneinfo}")
+    elif bool_of(cfg, "MKQNX_ZONEINFO_SRC_NONE"):
+        cmd.append("--zoneinfo=no")
 
     tz = str_of(cfg, "MKQNX_TZ", "UTC")
     if tz and tz != "UTC":
