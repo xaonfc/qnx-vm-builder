@@ -18,6 +18,12 @@ CFLAGS := -O2
 CXXFLAGS := -O2 -std=c++11 -fPIC
 LDFLAGS := 
 
+ifeq ($(V),1)
+  Q = 
+else
+  Q = @
+endif
+
 COMMON_SRCS := confdata.c expr.c menu.c preprocess.c symbol.c util.c
 
 GENERATED_SRCS := lexer.lex.c parser.tab.c parser.tab.h
@@ -54,69 +60,90 @@ GCONF_OBJS := $(addprefix $(OBJDIR)/, $(patsubst %.c,%.o,$(filter %.c,$(GCONF_SR
 all: $(BINDIR)/conf $(BINDIR)/nconf $(BINDIR)/mconf $(BINDIR)/qconf $(BINDIR)/gconf
 
 $(BINDIR)/conf: $(COMMON_OBJS) $(CONF_OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(CONF_OBJS) $(LDFLAGS)
+	@echo "  LD      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(CONF_OBJS) $(LDFLAGS)
 
 $(BINDIR)/nconf: $(COMMON_OBJS) $(NCONF_OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(NCONF_OBJS) $(LDFLAGS) -lncurses -lmenu -lpanel
+	@echo "  LD      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(NCONF_OBJS) $(LDFLAGS) -lncurses -lmenu -lpanel
 
 $(BINDIR)/mconf: $(COMMON_OBJS) $(MCONF_OBJS) $(LDIALOG_OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(MCONF_OBJS) $(LDIALOG_OBJS) $(LDFLAGS) -lcurses
+	@echo "  LD      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(MCONF_OBJS) $(LDIALOG_OBJS) $(LDFLAGS) -lcurses
 
 $(BINDIR)/qconf: $(COMMON_OBJS) $(QCONF_OBJS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $(COMMON_OBJS) $(QCONF_OBJS) $(LDFLAGS) $(shell $(PKG_CONFIG) --libs Qt5Core Qt5Gui Qt5Widgets)
+	@echo "  LD      $@"
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $(COMMON_OBJS) $(QCONF_OBJS) $(LDFLAGS) $(shell $(PKG_CONFIG) --libs Qt5Core Qt5Gui Qt5Widgets)
 
 $(BINDIR)/gconf: $(COMMON_OBJS) $(GCONF_OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(GCONF_OBJS) $(LDFLAGS) $(shell $(PKG_CONFIG) --libs gtk+-3.0)
+	@echo "  LD      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(GCONF_OBJS) $(LDFLAGS) $(shell $(PKG_CONFIG) --libs gtk+-3.0)
+	@echo "  CP      $(BINDIR)/gconf.ui"
+	@cp $(KCONFIG_SRCDIR)/gconf.ui $(BINDIR)
 
 $(shell mkdir -p $(OBJDIR))
 $(shell mkdir -p $(BINDIR))
 
 $(OBJDIR)/%.o: $(KCONFIG_SRCDIR)/%.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Compilation rules for nconf sources
 $(OBJDIR)/nconf.o: $(KCONFIG_SRCDIR)/nconf.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR)/nconf.gui.o: $(KCONFIG_SRCDIR)/nconf.gui.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR)/mnconf-common.o: $(KCONFIG_SRCDIR)/mnconf-common.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Compilation rules for mconf sources
 $(OBJDIR)/mconf.o: $(KCONFIG_SRCDIR)/mconf.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Compilation rules for lxdialog sources
 $(OBJDIR)/lxdialog_%.o: $(LDIALOG_SRCDIR)/%.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 # Compilation rules for qconf sources
 $(OBJDIR)/qconf.o: $(KCONFIG_SRCDIR)/qconf.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	@echo "  CXX     $@"
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(OBJDIR)/images.o: $(KCONFIG_SRCDIR)/images.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR)/qconf-moc.o: $(OBJDIR)/qconf-moc.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	@echo "  CXX     $@"
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(OBJDIR)/qconf-moc.cc: $(KCONFIG_SRCDIR)/qconf.h
-	$(MOC) $(KCONFIG_SRCDIR)/qconf.h -o $@
+	@echo "  MOC     $@"
+	@$(MOC) $(KCONFIG_SRCDIR)/qconf.h -o $@
 
 # Lexer and parser rules
 $(OBJDIR)/lexer.lex.o: $(OBJDIR)/lexer.lex.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $(OBJDIR)/lexer.lex.c
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $(OBJDIR)/lexer.lex.c
 
 $(OBJDIR)/lexer.lex.c: $(KCONFIG_SRCDIR)/lexer.l $(OBJDIR)/parser.tab.h
-	$(FLEX) -o $@ $<
+	@echo "  FLEX    $@"
+	@$(FLEX) -o $@ $<
 
 $(OBJDIR)/parser.tab.o: $(OBJDIR)/parser.tab.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DYYDEBUG -c -o $@ $(OBJDIR)/parser.tab.c
+	@echo "  CC      $@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -DYYDEBUG -c -o $@ $(OBJDIR)/parser.tab.c
 
 $(OBJDIR)/parser.tab.c $(OBJDIR)/parser.tab.h: $(KCONFIG_SRCDIR)/parser.y
-	$(BISON) -d --verbose -o $(OBJDIR)/parser.tab.c $<
+	@echo "  BISON   $@"
+	@$(BISON) -d --verbose -o $(OBJDIR)/parser.tab.c $<
 
 .PHONY: all clean
 

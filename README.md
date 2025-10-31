@@ -3,7 +3,7 @@
 Yours sincerely,
 *Mario*
 
-# QNX VM Builder
+# buildqnx
 
 ## Overview
 
@@ -56,8 +56,8 @@ sudo dnf install @development-tools git python3 qemu-kvm
 
 1.  Clone this repository:
     ```bash
-    git clone https://github.com/xaonfc/qnx-vm-builder
-    cd qnx-image-builder
+    git clone https://github.com/xaonfc/buildqnx
+    cd buildqnx
     ```
 
 2.  (Optional) Generate a default configuration:
@@ -115,7 +115,7 @@ Contributions are welcome! Please refer to the `LICENSE` file for licensing info
 
 This project is licensed under the GNU General Public License, version 3. See the `LICENSE` file for the full license text.
 
-The `scripts/kconfig-standalone` directory contains a modified version of the Linux kernel's Kconfig scripts. These scripts are licensed under the GNU General Public License, version 2.
+The `scripts/tools` directory contains a modified version of the Linux kernel's Kconfig scripts. These scripts are licensed under the GNU General Public License, version 2.
 
 ## Credits
 
