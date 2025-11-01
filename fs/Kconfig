@@ -28,20 +28,29 @@ config MKQNX_QCFS_ZSTD
 
 endchoice
 
-config MKQNX_QTD
-	bool "Make /system read-only by wrapping in a QTD container"
-	default n
+choice
+	prompt "Read-only /system method"
+	default MKQNX_QTD_NONE
 	help
-	  If yes, the system partition is read-only and protected by wrapping
-	  in a QTD container. This is a good idea for a released system but
-	  may be inconvenient in cases where security is not important.
+	  Select a method to make the /system partition read-only.
 
-config MKQNX_QTSAFEFS
-	bool "Make /system read-only using qtsafefs"
-	default n
-	help
-	  If yes, the system partition is read-only and uses the QNX trusted
-	  filesystem for safety driver (qtsafefsd).
+	config MKQNX_QTD_NONE
+		bool "None"
+
+	config MKQNX_QTD
+		bool "QTD container"
+		help
+		  If yes, the system partition is read-only and protected by wrapping
+		  in a QTD container. This is a good idea for a released system but
+		  may be inconvenient in cases where security is not important.
+
+	config MKQNX_QTSAFEFS
+		bool "QNX trusted filesystem"
+		depends on !MKQNX_QCFS_YES && !MKQNX_QCFS_LZ4HC && !MKQNX_QCFS_ZSTD
+		help
+		  If yes, the system partition is read-only and uses the QNX trusted
+		  filesystem for safety driver (qtsafefsd).
+endchoice
 
 choice
 	prompt "/data mount option"
