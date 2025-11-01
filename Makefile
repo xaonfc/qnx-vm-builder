@@ -3,8 +3,9 @@ CONFIG := .config
 OLDCONFIG := .config.old
 SCRIPTS := scripts
 PY := $(shell which python3 || which python)
+BUILD_SCRIPT := $(SCRIPTS)/build_mkqnximage.py
 
-.PHONY: help kbuild-standalone
+.PHONY: help kbuild-standalone all
 
 all: build
 
@@ -94,9 +95,9 @@ defconfig: configs/defconfig
 	@cp configs/defconfig $(CONFIG)
 	@echo "Wrote $(CONFIG)."
 
-build: $(SCRIPTS)/build_mkqnximage.py $(CONFIG)
+build: $(BUILD_SCRIPT) $(CONFIG)
 	@echo "Running mkqnximage using $(CONFIG)..."
-	@$(PY) $(SCRIPTS)/build_mkqnximage.py $(CONFIG)
+	@$(PY) $(BUILD_SCRIPT) $(CONFIG)
 
 show-config: $(CONFIG)
 	@echo "---- $(CONFIG) ----"
@@ -107,25 +108,13 @@ edit-users: $(SCRIPTS)/edit_users.py $(CONFIG)
 	@echo "Launching interactive users editor..."
 	@$(PY) $(SCRIPTS)/edit_users.py
 
-# 'clean' removes build output directories (interactive confirmation required)
 clean:
-	@read -p "This will remove contents of local/ and output/ (if present). Continue? [y/N]: " ans; \
-	if [ "$$ans" = "y" ] || [ "$$ans" = "Y" ]; then \
-	    rm -rf local output; \
-	    echo "clean complete."; \
-	else \
-	    echo "Aborted."; \
-	fi
+	@test -d local && echo '  CLEAN   local' && rm -rf local || true
+	@test -d output && echo '  CLEAN   output' && rm -rf output || true
 
-# 'distclean' removes local/, output/ AND .config (interactive confirmation required)
 distclean: clean
-	@read -p "DANGEROUS: this will remove .config. Continue? [y/N]: " ans; \
-	if [ "$$ans" = "y" ] || [ "$$ans" = "Y" ]; then \
-	    rm -f $(CONFIG) $(OLDCONFIG); \
-	    make -C $(KCONFIG_DIR) clean; \
-	    rm -rf kbuild-standalone; \
-	    echo "distclean complete."; \
-	else \
-	    echo "Aborted."; \
-	fi
+	@test -d $(KCONFIG_DIR)/bin && echo '  CLEAN   scripts/tools/kconfig' && make -C $(KCONFIG_DIR) clean --silent || true
+	@test -f $(CONFIG) && rm -f $(CONFIG) || true
+	@test -f $(OLDCONFIG) && rm -f $(OLDCONFIG) || true
+	@test -d include && echo '  CLEAN   include' && rm -rf include || true
 
