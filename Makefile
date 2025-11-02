@@ -38,55 +38,56 @@ help:
 	@echo "   distclean      - Remove build output and configuration files"
 	@echo ""
 
-KCONFIG_DIR := scripts/tools
+KCONFIG_DIR := scripts
+KCONFIG_BIN := $(KCONFIG_DIR)/kconfig
 
 .PHONY: conf-bin mconf-bin nconf-bin qconf-bin gconf-bin
 
 conf-bin:
-	@make -C $(KCONFIG_DIR) bin/conf
+	@make -C $(KCONFIG_DIR) conf
 
 mconf-bin:
-	@make -C $(KCONFIG_DIR) bin/mconf
+	@make -C $(KCONFIG_DIR) mconf
 
 nconf-bin:
-	@make -C $(KCONFIG_DIR) bin/nconf
+	@make -C $(KCONFIG_DIR) nconf
 
 qconf-bin:
-	@make -C $(KCONFIG_DIR) bin/qconf
+	@make -C $(KCONFIG_DIR) qconf
 
 gconf-bin:
-	@make -C $(KCONFIG_DIR) bin/gconf
+	@make -C $(KCONFIG_DIR) gconf
 
 .PHONY: help menuconfig nconfig xconfig gconfig oldconfig defconfig allyesconfig allnoconfig randconfig build clean distclean show-config edit-users config
 
 menuconfig: mconf-bin
-	@$(KCONFIG_DIR)/bin/mconf $(KCONFIG)
+	@$(KCONFIG_BIN)/mconf $(KCONFIG)
 
 nconfig: nconf-bin
-	@$(KCONFIG_DIR)/bin/nconf $(KCONFIG)
+	@$(KCONFIG_BIN)/nconf $(KCONFIG)
 
 xconfig: qconf-bin
-	@$(KCONFIG_DIR)/bin/qconf $(KCONFIG)
+	@$(KCONFIG_BIN)/qconf $(KCONFIG)
 
 gconfig: gconf-bin
-	@$(KCONFIG_DIR)/bin/gconf $(KCONFIG)
+	@$(KCONFIG_BIN)/gconf $(KCONFIG)
 
 config: conf-bin
-	@$(KCONFIG_DIR)/bin/conf $(KCONFIG)
+	@$(KCONFIG_BIN)/conf $(KCONFIG)
 
 oldconfig: conf-bin
-	@$(KCONFIG_DIR)/bin/conf --oldconfig $(KCONFIG)
+	@$(KCONFIG_BIN)/conf --oldconfig $(KCONFIG)
 
 allyesconfig: conf-bin
-	@$(KCONFIG_DIR)/bin/conf --allyesconfig $(KCONFIG)
+	@$(KCONFIG_BIN)/conf --allyesconfig $(KCONFIG)
 
 allnoconfig: conf-bin
-	@$(KCONFIG_DIR)/bin/conf --allnoconfig $(KCONFIG)
+	@$(KCONFIG_BIN)/conf --allnoconfig $(KCONFIG)
 
 # what could possibly go wrong with a random config?
 
 randconfig: conf-bin
-	@$(KCONFIG_DIR)/bin/conf --randconfig $(KCONFIG)
+	@$(KCONFIG_BIN)/conf --randconfig $(KCONFIG)
 
 $(CONFIG): $(KCONFIG)
 	@make defconfig
@@ -113,7 +114,7 @@ clean:
 	@test -d output && echo '  CLEAN   output' && rm -rf output || true
 
 distclean: clean
-	@test -d $(KCONFIG_DIR)/bin && echo '  CLEAN   scripts/tools/kconfig' && make -C $(KCONFIG_DIR) clean --silent || true
+	@test -d $(KCONFIG_BIN) && echo '  CLEAN   scripts/kconfig' && make -C $(KCONFIG_DIR) clean --silent || true
 	@test -f $(CONFIG) && rm -f $(CONFIG) || true
 	@test -f $(OLDCONFIG) && rm -f $(OLDCONFIG) || true
 	@test -d include && echo '  CLEAN   include' && rm -rf include || true

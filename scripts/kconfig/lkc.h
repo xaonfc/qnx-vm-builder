@@ -11,7 +11,6 @@
 #include <stdlib.h>
 
 #include "expr.h"
-#include "preprocess.h"
 
 #ifdef __cplusplus
 extern "C" {

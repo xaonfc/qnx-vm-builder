@@ -1,0 +1,26 @@
+Kconfig tools
+
+==============================
+
+You can use this in your kconfig based build system but it may need changes to the code to make it work for your project. This is just a simple implementation.
+
+
+Build:
+-------------------
+1. Navigate to the root directory of this repository.
+2. Run 'make' to build all the tools:
+
+$ make
+
+To build a specific tool, run 'make <tool_name>'.
+
+   For example, to build only the 'conf' tool, run:
+
+$ make conf
+
+Clean Instructions:
+-------------------
+To start fresh you can run:
+$ make clean
+
+

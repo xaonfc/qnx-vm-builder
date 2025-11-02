@@ -9,9 +9,9 @@ BISON := bison
 MOC := moc
 PKG_CONFIG := pkg-config
 
-BINDIR := bin
+BINDIR := kconfig
 
-OBJDIR := obj
+OBJDIR := kconfig
 
 CPPFLAGS := -I$(KCONFIG_SRCDIR) -I. -I$(INCLUDE_SRCDIR) -I$(OBJDIR) $(shell $(PKG_CONFIG) --cflags Qt5Core Qt5Gui Qt5Widgets) $(shell $(PKG_CONFIG) --cflags gtk+-3.0)
 CFLAGS := -O2
@@ -75,14 +75,15 @@ $(BINDIR)/qconf: $(COMMON_OBJS) $(QCONF_OBJS)
 	@echo "  LD      $@"
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $(COMMON_OBJS) $(QCONF_OBJS) $(LDFLAGS) $(shell $(PKG_CONFIG) --libs Qt5Core Qt5Gui Qt5Widgets)
 
-$(BINDIR)/gconf: $(COMMON_OBJS) $(GCONF_OBJS)
+$(BINDIR)/gconf: $(COMMON_OBJS) $(GCONF_OBJS) $(KCONFIG_SRCDIR)/gconf.ui
 	@echo "  LD      $@"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(COMMON_OBJS) $(GCONF_OBJS) $(LDFLAGS) $(shell $(PKG_CONFIG) --libs gtk+-3.0)
-	@echo "  CP      $(BINDIR)/gconf.ui"
-	@cp $(KCONFIG_SRCDIR)/gconf.ui $(BINDIR)
 
-$(shell mkdir -p $(OBJDIR))
-$(shell mkdir -p $(BINDIR))
+$(KCONFIG_SRCDIR)/gconf.ui:
+	@echo "  CP      $@"
+	@cp linux/scripts/kconfig/gconf.ui $@
+
+
 
 $(OBJDIR)/%.o: $(KCONFIG_SRCDIR)/%.c
 	@echo "  CC      $@"
@@ -145,7 +146,14 @@ $(OBJDIR)/parser.tab.c $(OBJDIR)/parser.tab.h: $(KCONFIG_SRCDIR)/parser.y
 	@echo "  BISON   $@"
 	@$(BISON) -d --verbose -o $(OBJDIR)/parser.tab.c $<
 
-.PHONY: all clean
+conf: $(BINDIR)/conf
+nconf: $(BINDIR)/nconf
+mconf: $(BINDIR)/mconf
+qconf: $(BINDIR)/qconf
+gconf: $(BINDIR)/gconf
+
+.PHONY: all clean conf nconf mconf qconf gconf
 
 clean:
-	rm -rf $(BINDIR) $(OBJDIR)
+	rm -f $(KCONFIG_SRCDIR)/conf $(KCONFIG_SRCDIR)/nconf $(KCONFIG_SRCDIR)/mconf $(KCONFIG_SRCDIR)/qconf $(KCONFIG_SRCDIR)/gconf
+	rm -f $(KCONFIG_SRCDIR)/*.o $(KCONFIG_SRCDIR)/*.lex.c $(KCONFIG_SRCDIR)/*.output $(KCONFIG_SRCDIR)/*.tab.c $(KCONFIG_SRCDIR)/*.tab.h $(KCONFIG_SRCDIR)/*-moc.cc

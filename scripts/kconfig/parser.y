@@ -32,10 +32,6 @@ struct menu *current_menu, *current_entry, *current_choice;
 
 %}
 
-%code requires {
-#include "lkc.h"
-}
-
 %union
 {
 	char *string;
@@ -45,6 +41,7 @@ struct menu *current_menu, *current_entry, *current_choice;
 	enum symbol_type type;
 	enum variable_flavor flavor;
 }
+
 %token <string> T_HELPTEXT
 %token <string> T_WORD
 %token <string> T_WORD_QUOTE
