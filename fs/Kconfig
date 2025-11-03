@@ -50,6 +50,7 @@ choice
 		help
 		  If yes, the system partition is read-only and uses the QNX trusted
 		  filesystem for safety driver (qtsafefsd).
+
 endchoice
 
 choice

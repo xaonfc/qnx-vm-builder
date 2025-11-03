@@ -15,7 +15,7 @@ import shutil
 import subprocess
 import tempfile
 
-CONF_PATH = os.path.abspath(os.path.join('scripts', 'kconfig', 'conf'))
+CONF_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'conf'))
 
 
 class Conf:

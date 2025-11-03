@@ -80,6 +80,7 @@ endchoice
 
 config MKQNX_QFIM
 	bool "Include QFIM (Integrity Measurement)"
+	depends on MKQNX_TCG_YES || MKQNX_TCG_CMDLINE
 	default n
 	help
 	  If yes, include QFIM (QNX Framework for Integrity Measurement)
