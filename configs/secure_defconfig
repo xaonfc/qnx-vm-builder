@@ -1,0 +1,136 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# Main menu
+#
+
+#
+# Behavior
+#
+# CONFIG_MKQNX_CLEAN is not set
+# CONFIG_MKQNX_VERBOSE is not set
+CONFIG_MKQNX_ASSUMED_IP=""
+# CONFIG_MKQNX_NOPROMPT is not set
+# end of Behavior
+
+#
+# Runtime
+#
+CONFIG_MKQNX_TYPE_QEMU=y
+# CONFIG_MKQNX_TYPE_VMWARE is not set
+# CONFIG_MKQNX_TYPE_VBOX is not set
+# CONFIG_MKQNX_TYPE_QVM is not set
+CONFIG_MKQNX_CPU=2
+CONFIG_MKQNX_PROC=""
+CONFIG_MKQNX_RAM="1G"
+# end of Runtime
+
+#
+# Partitioning
+#
+CONFIG_MKQNX_PART_SIZES="full"
+CONFIG_MKQNX_BOOT_SIZE=0
+CONFIG_MKQNX_SYS_SIZE=0
+CONFIG_MKQNX_DATA_SIZE=0
+CONFIG_MKQNX_SYS_INODES=0
+CONFIG_MKQNX_DATA_INODES=0
+# end of Partitioning
+
+#
+# File System & Integrity
+#
+CONFIG_MKQNX_UNION=y
+# CONFIG_MKQNX_QCFS_NO is not set
+# CONFIG_MKQNX_QCFS_YES is not set
+CONFIG_MKQNX_QCFS_LZ4HC=y
+# CONFIG_MKQNX_QCFS_ZSTD is not set
+# CONFIG_MKQNX_QTD_NONE is not set
+CONFIG_MKQNX_QTD=y
+# CONFIG_MKQNX_SECURE_DATA_NO is not set
+# CONFIG_MKQNX_SECURE_DATA_NOSUID is not set
+CONFIG_MKQNX_SECURE_DATA_NOEXEC=y
+CONFIG_MKQNX_PATHTRUST=y
+CONFIG_MKQNX_ZONEINFO_SRC_NONE=y
+# CONFIG_MKQNX_ZONEINFO_SRC_DEFAULT is not set
+# CONFIG_MKQNX_ZONEINFO_SRC_CUSTOM is not set
+CONFIG_MKQNX_TZ="UTC"
+# end of File System & Integrity
+
+#
+# Users & SSH
+#
+CONFIG_MKQNX_USERS=""
+CONFIG_MKQNX_SSH_IDENT="prompt"
+CONFIG_MKQNX_SSHD_PREGEN=y
+# end of Users & SSH
+
+#
+# Networking
+#
+CONFIG_MKQNX_IP="dhcp"
+CONFIG_MKQNX_HOSTNAME=""
+CONFIG_MKQNX_MACADDR=""
+CONFIG_MKQNX_TIME_SERVERS="pool.ntp.org"
+# end of Networking
+
+#
+# Repos & Extras
+#
+CONFIG_MKQNX_REPOS=""
+CONFIG_MKQNX_EXTRA_DIRS=""
+# end of Repos & Extras
+
+#
+# Security & TPM
+#
+CONFIG_MKQNX_ASLR=y
+CONFIG_MKQNX_SECURE_PROCFS=y
+CONFIG_MKQNX_CERTICOM=y
+# CONFIG_MKQNX_TCG_NO is not set
+CONFIG_MKQNX_TCG_YES=y
+# CONFIG_MKQNX_TCG_CMDLINE is not set
+CONFIG_MKQNX_CRYPTODEV=y
+CONFIG_MKQNX_POLICY="none"
+# CONFIG_MKQNX_SECPOL_NO is not set
+# CONFIG_MKQNX_SECPOL_DEVELOP is not set
+# CONFIG_MKQNX_SECPOL_OPEN is not set
+CONFIG_MKQNX_SECPOL_SECURE=y
+# CONFIG_MKQNX_QFIM is not set
+# end of Security & TPM
+
+#
+# Packages
+#
+# CONFIG_MKQNX_TOMCRYPT is not set
+# CONFIG_MKQNX_PERL is not set
+# CONFIG_MKQNX_PKCS11 is not set
+# CONFIG_MKQNX_PYTHON is not set
+# CONFIG_MKQNX_QAUDIT is not set
+# CONFIG_MKQNX_VALGRIND is not set
+# end of Packages
+
+#
+# Diagnostics
+#
+# CONFIG_MKQNX_IO_SOCK_DIAG is not set
+# CONFIG_MKQNX_SANITIZERS is not set
+CONFIG_MKQNX_QH_CONFIG="no"
+# end of Diagnostics
+
+#
+# Hardware
+#
+CONFIG_MKQNX_USB=y
+# CONFIG_MKQNX_GRAPHICS is not set
+CONFIG_MKQNX_NFS="no"
+# end of Hardware
+
+#
+# System Flags
+#
+# CONFIG_MKQNX_ROOT is not set
+CONFIG_MKQNX_ABLELOCK=y
+# CONFIG_MKQNX_SLM is not set
+# end of System Flags
+
+CONFIG_MKQNX_ARCH_X86_64=y
+# CONFIG_MKQNX_ARCH_AARCH64LE is not set

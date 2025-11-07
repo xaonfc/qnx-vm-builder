@@ -9,33 +9,50 @@ BUILD_SCRIPT := $(SCRIPTS)/build_mkqnximage.py
 
 all: build
 
+# Auto-detect configuration targets from the configs/ directory.
+# For each file in configs/, a make target is created with the same name.
+# For example, 'make myconfig' will use 'configs/myconfig' to generate .config.
+CONFIG_FILES := $(wildcard configs/*)
+CONFIG_TARGETS := $(notdir $(CONFIG_FILES))
+
+.PHONY: $(CONFIG_TARGETS)
+$(CONFIG_TARGETS):
+	@cp configs/$@ $(CONFIG)
+	@echo "#"
+	@echo "# Using config: $@"
+	@echo "#"
+
 # Categorize help targets by their function
 
 help:
 	@echo "Available make targets:"
 	@echo ""
-	@echo " Configuration targets:"
+	@echo " General configuration targets:"
 	@echo "   menuconfig       - Launch graphical menu-based configuration"
-	@echo "   nconfig         - Launch ncurses-based configuration"
-	@echo "   xconfig         - Launch Qt-based configuration"
-	@echo "   gconfig         - Launch GTK-based configuration"
-	@echo "   config          - Basic text-based configuration"
-	@echo "   oldconfig       - Update current config with new options"
-	@echo "   defconfig       - Create default config file"
-	@echo "   allyesconfig    - Set all options to 'yes'"
-	@echo "   allnoconfig     - Set all options to 'no'"
-	@echo "   randconfig      - Generate random config"
+	@echo "   nconfig          - Launch ncurses-based configuration"
+	@echo "   xconfig          - Launch Qt-based configuration"
+	@echo "   gconfig          - Launch GTK-based configuration"
+	@echo "   config           - Basic text-based configuration"
+	@echo "   oldconfig        - Update current config with new options"
+	@echo "   allyesconfig     - Set all options to 'yes'"
+	@echo "   allnoconfig      - Set all options to 'no'"
+	@echo "   randconfig       - Generate random config"
+	@echo ""
+	@echo " Pre-defined configuration targets (from configs/):"
+	@for config in $(CONFIG_TARGETS); do \
+		printf "   %-20s - Create .config from configs/%s\n" "$$config" "$$config"; \
+	done
 	@echo ""
 	@echo " Build targets:"
-	@echo "   build           - Build the image using the current config"
+	@echo "   build            - Build the image using the current config"
 	@echo ""
 	@echo " Utility targets:"
-	@echo "   show-config     - Display the current configuration"
-	@echo "   edit-users      - Edit user accounts in the configuration"
+	@echo "   show-config      - Display the current configuration"
+	@echo "   edit-users       - Edit user accounts in the configuration"
 	@echo ""
 	@echo " Cleanup targets:"
-	@echo "   clean           - Remove build output directories (local/, output/)"
-	@echo "   distclean      - Remove build output and configuration files"
+	@echo "   clean            - Remove build output directories (local/, output/)"
+	@echo "   distclean        - Remove build output and configuration files"
 	@echo ""
 
 KCONFIG_DIR := scripts
@@ -58,7 +75,7 @@ qconf-bin:
 gconf-bin:
 	@make -C $(KCONFIG_DIR) gconf
 
-.PHONY: help menuconfig nconfig xconfig gconfig oldconfig defconfig allyesconfig allnoconfig randconfig build clean distclean show-config edit-users config
+.PHONY: help menuconfig nconfig xconfig gconfig oldconfig allyesconfig allnoconfig randconfig build clean distclean show-config edit-users config
 
 menuconfig: mconf-bin
 	@$(KCONFIG_BIN)/mconf $(KCONFIG)
@@ -91,10 +108,6 @@ randconfig: conf-bin
 
 $(CONFIG): $(KCONFIG)
 	@make defconfig
-
-defconfig: configs/defconfig
-	@cp configs/defconfig $(CONFIG)
-	@echo "Wrote $(CONFIG)."
 
 build: $(BUILD_SCRIPT) $(CONFIG)
 	@echo "Running mkqnximage using $(CONFIG)..."

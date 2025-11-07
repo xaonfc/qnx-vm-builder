@@ -1,13 +1,14 @@
 **BIG FAT WARNING**: Every code or documentation of this repository were generated or assisted by AI models such as Gemini and ChatGPT. Bugs and odd behavior are to be expected. Please open an issue for any problems or a pull request for fixes and improvements. 
 
 Yours sincerely,
+
 *Mario*
 
 # buildqnx
 
 ## Overview
 
-This project provides a set of scripts and configurations to build and run QNX within various virtual machines, including QEMU, VirtualBox, VMware, and QVM. It aims to simplify the process of setting up a QNX development environment or testing QNX applications.
+This project provides a set of scripts, makefiles and configurations to build and run QNX within various virtual machines, including QEMU, VirtualBox, VMware, and QVM. It aims to simplify the process of setting up a QNX development environment or testing QNX applications.
 
 ## Features
 
@@ -52,7 +53,7 @@ sudo dnf install @development-tools git python3 qemu-kvm
 
 **Note on VMware:** VMware products are proprietary and must be downloaded from the official [VMware website](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion).
 
-### Installation
+### Quick Start
 
 1.  Clone this repository:
     ```bash
@@ -60,16 +61,19 @@ sudo dnf install @development-tools git python3 qemu-kvm
     cd buildqnx
     ```
 
-2.  (Optional) Generate a default configuration:
+2.  Generate a default configuration:
     ```bash
     make defconfig
     ```
 
-3.  (Optional) Configure the QNX image interactively:
+**OR**
+
+3.  Configure the QNX image interactively using menuconfig:
     ```bash
     make menuconfig
     ```
-    (This will automatically clone and build the necessary kconfig tools if they are not present.)
+
+See configs/ for more example configuration files.
 
 ### Building the QNX Image
 
@@ -83,7 +87,7 @@ This will execute the `mkqnximage` tool with the parameters specified in your `.
 
 ### Managing Users
 
-To interactively add, edit, or delete users in your QNX configuration:
+To interactively add, edit, or delete users in your QNX configuration (before building the image):
 
 ```bash
 make edit-users
@@ -97,7 +101,7 @@ To remove build artifacts (contents of `local/` and `output/`):
 make clean
 ```
 
-To remove build artifacts and the `.config` file, and the `kbuild-standalone` directory:
+To return the project to a pristine state, removing all generated files including the configuration:
 
 ```bash
 make distclean
@@ -109,13 +113,11 @@ The project uses a `Kconfig` file to define various options for the QNX image. Y
 
 ## Contributing
 
-Contributions are welcome! Please refer to the `LICENSE` file for licensing information.
+Contributions are welcome! Feel free to open issues or submit pull requests on GitHub. 
 
-## License
+## Licensing
 
-This project is licensed under the GNU General Public License, version 3. See the `LICENSE` file for the full license text.
-
-The `scripts/tools` directory contains a modified version of the Linux kernel's Kconfig scripts. These scripts are licensed under the GNU General Public License, version 2.
+This whole project is licensed under the GPL-v3.0-or-later. See the `LICENSE` file for the full license text.the only exception is `scripts/tools` because it contains a modified version of the Linux kernel's Kconfig scripts. These scripts are licensed under the GPL-v2.0.
 
 ## Credits
 
