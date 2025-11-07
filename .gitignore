@@ -1,0 +1,30 @@
+# Build artifacts
+local/
+output/
+include/
+
+# Kconfig generated files
+.config
+.config.old
+scripts/kconfig/conf
+scripts/kconfig/mconf
+scripts/kconfig/nconf
+scripts/kconfig/qconf
+scripts/kconfig/gconf
+
+# Python files
+__pycache__*
+
+# Editor and OS files
+*~
+*.swp
+*.swo
+._*
+.DS_Store
+.idea/
+.vscode/
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
