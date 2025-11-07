@@ -58,52 +58,52 @@ help:
 KCONFIG_DIR := scripts
 KCONFIG_BIN := $(KCONFIG_DIR)/kconfig
 
-.PHONY: conf-bin mconf-bin nconf-bin qconf-bin gconf-bin
+.PHONY: _conf-bin _mconf-bin _nconf-bin _qconf-bin _gconf-bin
 
-conf-bin:
+_conf-bin:
 	@make -C $(KCONFIG_DIR) conf
 
-mconf-bin:
+_mconf-bin:
 	@make -C $(KCONFIG_DIR) mconf
 
-nconf-bin:
+_nconf-bin:
 	@make -C $(KCONFIG_DIR) nconf
 
-qconf-bin:
+_qconf-bin:
 	@make -C $(KCONFIG_DIR) qconf
 
-gconf-bin:
+_gconf-bin:
 	@make -C $(KCONFIG_DIR) gconf
 
 .PHONY: help menuconfig nconfig xconfig gconfig oldconfig allyesconfig allnoconfig randconfig build clean distclean show-config edit-users config
 
-menuconfig: mconf-bin
+menuconfig: _mconf-bin
 	@$(KCONFIG_BIN)/mconf $(KCONFIG)
 
-nconfig: nconf-bin
+nconfig: _nconf-bin
 	@$(KCONFIG_BIN)/nconf $(KCONFIG)
 
-xconfig: qconf-bin
+xconfig: _qconf-bin
 	@$(KCONFIG_BIN)/qconf $(KCONFIG)
 
-gconfig: gconf-bin
+gconfig: _gconf-bin
 	@$(KCONFIG_BIN)/gconf $(KCONFIG)
 
-config: conf-bin
+config: _conf-bin
 	@$(KCONFIG_BIN)/conf $(KCONFIG)
 
-oldconfig: conf-bin
+oldconfig: _conf-bin
 	@$(KCONFIG_BIN)/conf --oldconfig $(KCONFIG)
 
-allyesconfig: conf-bin
+allyesconfig: _conf-bin
 	@$(KCONFIG_BIN)/conf --allyesconfig $(KCONFIG)
 
-allnoconfig: conf-bin
+allnoconfig: _conf-bin
 	@$(KCONFIG_BIN)/conf --allnoconfig $(KCONFIG)
 
 # what could possibly go wrong with a random config?
 
-randconfig: conf-bin
+randconfig: _conf-bin
 	@$(KCONFIG_BIN)/conf --randconfig $(KCONFIG)
 
 $(CONFIG): $(KCONFIG)
